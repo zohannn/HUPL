@@ -29,24 +29,20 @@ def preprocess_features(task_dataframe):
       from the task 1 data set.
   Returns:
     A DataFrame that contains the features to be used for the model.
+    The input columns.
   """
-  selected_features = task_dataframe[
-    ["target_x_mm",
-     "target_y_mm",
-     "target_z_mm",
-     "target_roll_rad",
-     "target_pitch_rad",
-     "target_yaw_rad",
-     "obstacle_1_x_mm",
-     "obstacle_1_y_mm",
-     "obstacle_1_z_mm",
-     "obstacle_1_roll_rad",
-     "obstacle_1_pitch_rad",
-     "obstacle_1_yaw_rad"]]
+  inputs_cols = [col for col in task_dataframe if (col.startswith('target') or col.startswith('obstacle'))]
+  selected_features = task_dataframe[inputs_cols]
+  # delete unnecessary columns of the inputs because are practically constant
+  th=0.001
+  for column in selected_features:
+      if (selected_features[column].std()<=th or math.isnan(selected_features[column].std())):
+          del selected_features[column]
 
   processed_features = selected_features.copy()
+  in_cols = processed_features.columns.values
 
-  return processed_features
+  return (processed_features,in_cols)
 
 def preprocess_targets(task_dataframe):
   """Prepares target features (i.e., labels) from task 1 data set.
@@ -62,19 +58,9 @@ def preprocess_targets(task_dataframe):
   null_targets = []
   #const_targets = []
 
-  del selected_targets['target_x_mm']
-  del selected_targets['target_y_mm']
-  del selected_targets['target_z_mm']
-  del selected_targets['target_roll_rad']
-  del selected_targets['target_pitch_rad']
-  del selected_targets['target_yaw_rad']
-
-  del selected_targets['obstacle_1_x_mm']
-  del selected_targets['obstacle_1_y_mm']
-  del selected_targets['obstacle_1_z_mm']
-  del selected_targets['obstacle_1_roll_rad']
-  del selected_targets['obstacle_1_pitch_rad']
-  del selected_targets['obstacle_1_yaw_rad']
+  inputs_cols = [col for col in task_dataframe if (col.startswith('target') or col.startswith('obstacle'))]
+  for column in inputs_cols:
+      del selected_targets[column]
 
   # delete unnecessary columns of the outputs because are practically null
   th=0.001
@@ -89,7 +75,6 @@ def preprocess_targets(task_dataframe):
           #del selected_targets[column]
 
   output_targets = selected_targets.copy()
-
   return (output_targets,null_targets)
 
 def linear_scale(series):
@@ -232,7 +217,7 @@ def train_nn_regressor_model(
         training_targets,
         validation_examples,
         validation_targets,
-        model_dir="/media/gianpaolo/DATA/Gianpaolo/MEGA/HAPL/task_reaching_1/models"):
+        model_dir):
     """Trains a neural network regression model.
 
     In addition to training, this function also prints training progress information,
@@ -310,11 +295,24 @@ def train_nn_regressor_model(
         training_root_mean_squared_error = math.sqrt( metrics.mean_squared_error(training_predictions, training_targets))
         validation_root_mean_squared_error = math.sqrt(metrics.mean_squared_error(validation_predictions, validation_targets))
         # Occasionally print the current loss.
-        print("  period %02d : %0.3f" % (period, training_root_mean_squared_error))
+        print("period %02d : %0.3f" % (period, training_root_mean_squared_error))
         # Add the loss metrics from this period to our list.
         training_rmse.append(training_root_mean_squared_error)
         validation_rmse.append(validation_root_mean_squared_error)
     print("Model training finished.")
+
+    # Output a graph of loss metrics over periods.
+    plt.clf()
+    plt.ylabel("RMSE")
+    plt.xlabel("Periods")
+    plt.title("Root Mean Squared Error vs. Periods")
+    plt.plot(training_rmse, label="training")
+    plt.plot(validation_rmse, label="validation")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(model_dir + "/rmse.pdf")
+    plt.clf()
+    #plt.show()
 
     res_file = open(model_dir+"/results.txt", "w")
     res_file.write("### Results of the regression ###\n")
@@ -331,18 +329,6 @@ def train_nn_regressor_model(
         errors_file.write("%.6f\n" % validation_rmse[i])
     errors_file.close()
 
-
-    # Output a graph of loss metrics over periods.
-    plt.ylabel("RMSE")
-    plt.xlabel("Periods")
-    plt.title("Root Mean Squared Error vs. Periods")
-    plt.tight_layout()
-    plt.plot(training_rmse, label="training")
-    plt.plot(validation_rmse, label="validation")
-    plt.legend()
-    plt.savefig(model_dir + "/rmse.pdf")
-    plt.clf()
-    #plt.show()
 
     print("Final RMSE (on training data):   %0.2f" % training_root_mean_squared_error)
     print("Final RMSE (on validation data): %0.2f" % validation_root_mean_squared_error)
@@ -467,13 +453,14 @@ def train_nn_classifier_model(
     losses_file.close()
 
     # Output a graph of loss metrics over periods.
+    plt.clf()
     plt.ylabel("LogLoss")
     plt.xlabel("Periods")
     plt.title("LogLoss vs. Periods")
-    plt.tight_layout()
     plt.plot(training_log_losses, label="training")
     plt.plot(validation_log_losses, label="validation")
     plt.legend()
+    plt.tight_layout()
     plt.savefig(model_dir+"/log_loss.pdf")
     plt.clf()
     #plt.show()
