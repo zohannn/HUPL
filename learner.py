@@ -33,16 +33,18 @@ def preprocess_features(task_dataframe):
   """
   inputs_cols = [col for col in task_dataframe if (col.startswith('target') or col.startswith('obstacle'))]
   selected_features = task_dataframe[inputs_cols]
+  null_features = []
   # delete unnecessary columns of the inputs because are practically constant
   th=0.001
   for column in selected_features:
       if (selected_features[column].std()<=th or math.isnan(selected_features[column].std())):
+          null_features.append(column)
           del selected_features[column]
 
   processed_features = selected_features.copy()
   in_cols = processed_features.columns.values
 
-  return (processed_features,in_cols)
+  return (processed_features,in_cols,null_features)
 
 def preprocess_targets(task_dataframe):
   """Prepares target features (i.e., labels) from task 1 data set.
