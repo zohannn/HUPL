@@ -34,17 +34,21 @@ def preprocess_features(task_dataframe):
   inputs_cols = [col for col in task_dataframe if (col.startswith('target') or col.startswith('obstacle'))]
   selected_features = task_dataframe[inputs_cols]
   null_features = []
+  id_null_cols = []
+  processed_features = selected_features.copy()
   # delete unnecessary columns of the inputs because are practically constant
   th=0.001
   for column in selected_features:
       if (selected_features[column].std()<=th or math.isnan(selected_features[column].std())):
+          id_col = selected_features.columns.get_loc(column)
+          id_null_cols.append(id_col)
           null_features.append(column)
-          del selected_features[column]
+          del processed_features[column]
 
-  processed_features = selected_features.copy()
+  #processed_features = selected_features.copy()
   in_cols = processed_features.columns.values
 
-  return (processed_features,in_cols,null_features)
+  return (processed_features,in_cols,null_features,id_null_cols)
 
 def preprocess_targets(task_dataframe):
   """Prepares target features (i.e., labels) from task 1 data set.
@@ -64,6 +68,7 @@ def preprocess_targets(task_dataframe):
   for column in inputs_cols:
       del selected_targets[column]
 
+  output_targets = selected_targets.copy()
   # delete unnecessary columns of the outputs because are practically null
   th=0.001
   for column in selected_targets:
@@ -71,12 +76,12 @@ def preprocess_targets(task_dataframe):
       if (selected_targets[column].mean()<=th and selected_targets[column].std()<=th):
           #print(output_targets[column])
           null_targets.append(column)
-          del selected_targets[column]
+          del output_targets[column]
       #elif (selected_targets[column].std() <= th):
           #const_targets.append(column)
           #del selected_targets[column]
 
-  output_targets = selected_targets.copy()
+
   return (output_targets,null_targets)
 
 def linear_scale(series):
