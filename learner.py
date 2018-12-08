@@ -530,11 +530,12 @@ def train_svm_regressor_model(kernel,gamma,coeff,degree,epsilon,training_example
  svr = svm.SVR(kernel=kernel, gamma=gamma,C=coeff,degree=degree,epsilon=epsilon)
  regressor = MultiOutputRegressor(svr)
  regressor.fit(training_examples, training_targets)
+ training_predictions = regressor.predict(training_examples)
 
  r2_score = regressor.score(training_examples, training_targets)
  print("R^2 score (on training data): %0.3f " % r2_score)
 
- rmse = math.sqrt(metrics.mean_squared_error(training_examples, training_targets))
+ rmse = math.sqrt(metrics.mean_squared_error(training_predictions, training_targets))
  print("Final RMSE (on training data): %0.3f" % rmse)
 
  res_file = open(model_dir + "/results.txt", "w")
@@ -552,11 +553,12 @@ def train_knn_regressor_model(n_neighbors,weights,algorithm,training_examples,tr
  neigh_reg = KNeighborsRegressor(n_neighbors=n_neighbors,weights=weights,algorithm=algorithm)
  regressor = MultiOutputRegressor(neigh_reg)
  regressor.fit(training_examples, training_targets)
+ training_predictions = regressor.predict(training_examples)
 
  r2_score = regressor.score(training_examples, training_targets)
  print("R^2 score (on training data): %0.3f " % r2_score)
 
- rmse = math.sqrt(metrics.mean_squared_error(training_examples, training_targets))
+ rmse = math.sqrt(metrics.mean_squared_error(training_predictions, training_targets))
  print("Final RMSE (on training data): %0.3f" % rmse)
 
  res_file = open(model_dir + "/results.txt", "w")
