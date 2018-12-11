@@ -70,7 +70,7 @@ def preprocess_targets(task_dataframe):
 
   output_targets = selected_targets.copy()
   # delete unnecessary columns of the outputs because are practically null
-  th=0.001
+  th=0.0001
   for column in selected_targets:
       #print(output_targets[column])
       if (selected_targets[column].mean()<=th and selected_targets[column].std()<=th):
