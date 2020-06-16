@@ -842,21 +842,6 @@ def preprocess_targets_warm(task_dataframe):
   return (output_targets)
 
 
-def k_eucl_sim(X1,X2):
-  """ Euclidean similarity function between two situations
-
-  Args:
-    X1: First situation vector (dim=s)
-    X2: Second situation vector (dim=s)
-  Returns:
-    A coefficient of similarity
-  """
-  X1 = np.array(X1)
-  X2 = np.array(X2)
-  assert len(X1)==len(X2)
-  eucl_dist = np.square(np.linalg.norm((X1-X2),ord=2))
-  return np.exp((-1/2)*eucl_dist)
-
 def k_sim(X1,X2,W):
   """ Weighted similarity function between two situations
 
@@ -900,59 +885,6 @@ def k_sim_sigma(X1,X2,W,sigma):
   d2 = np.sum(X_diff_2 * W2_arr)
   return np.exp(-d2/(2*sigma2))
 
-def NNopt_loss_function_err_eucl(X_df,costs_df,n_D,M,f_dim):
-  """
-
-  :param X_df:
-  :param costs_df:
-  :param n_D:
-  :param M:
-  :param f_dim:
-  :return:
-  """
-  xj_df = X_df.iloc[:,:f_dim]
-  xi_df = X_df.iloc[0:n_D, f_dim:(2*f_dim)]
-  n_samples = len(costs_df)
-
-  #print(costs_df.head())
-  #print(xj_df.iloc[:,:])
-  #print(xi_df.iloc[:,:])
-
-  L = 0
-  n_Dx = round(n_samples/n_D)
-  mm = M # number of nearest neighbors for sparsity
-  nn = int(M*2)  # considered number of nearest neighbors
-
-  for jj in range(n_Dx):
-    xj = xj_df.iloc[jj*n_D]
-
-    k_sim_vect = []
-    for ii in range(n_D):
-        xii = xi_df.iloc[ii]
-        k_sim_vect.append(k_eucl_sim(xj, xii))
-    k_sim_df = pd.DataFrame({'k_sim': k_sim_vect})
-    k_sim_sorted_df = k_sim_df.sort(['k_sim'], ascending=False)
-    k_sim_sorted_df = k_sim_sorted_df.reset_index(drop=True)
-    k_sim_sored_values = k_sim_sorted_df['k_sim']
-    Z = np.sum(k_sim_sored_values.iloc[0:nn])
-    if ((np.abs(Z)) < 1e-60):
-        reg = 1e+60
-    else:
-        reg = (1 / Z)
-
-    E_vect = []
-    for ii in range(n_D):
-        xii = xi_df.iloc[ii]
-        cc = costs_df.iloc[(jj * n_D)+ii, 0]  # total cost
-        E_vect.append(cc * reg * (k_eucl_sim(xj, xii)))
-    E_df = pd.DataFrame({'k_sim': k_sim_vect,'E_value': E_vect})
-    E_sorted_df = E_df.sort(['k_sim'], ascending=False)
-    E_sorted_df = E_sorted_df.reset_index(drop=True)
-    E_value_sorted_df = E_sorted_df['E_value']
-    E = np.sum(E_value_sorted_df.iloc[0:nn])
-
-    L += E
-  return (L/n_Dx)
 
 def NNopt_loss_function_err_sigma(X_df,costs_df,n_D,M,W,r):
   """
@@ -1204,10 +1136,7 @@ def z_score_normalize(series):
 def robust_scale(series):
   median = series.median()
   iqr = series.quantile(0.75) - series.quantile(0.25)
-  if(iqr<=1e-30):
-      return series.apply(lambda x:(x - median)), median, iqr
-  else:
-      return series.apply(lambda x:(x - median) / iqr), median, iqr
+  return series.apply(lambda x:(x - median) / iqr), median, iqr
 
 def z_score_denormalize(series,mean,std):
 
@@ -1319,11 +1248,10 @@ class VSMModel:
     Variable Similarity model: fit by minimizing the provided loss_function with L1 regularization
   """
 
-  def __init__(self, X=None, Y=None, n_D=1,weights_init=None,r_init=0.6,mm=5,reg_w=0.04,reg_r=0.1,tol=1e-06):
+  def __init__(self, X=None, Y=None, n_D=1,weights_init=None,r_init=0.6,nn=10,mm=5,reg_w=0.2,tol=1e-06):
     self.loss_function = NNopt_loss_function_err_sigma
     self.jac_loss_function = jac_NNopt_loss_function_err_sigma
     self.reg_w = reg_w
-    self.reg_r = reg_r
     self.weights_init = weights_init.copy()
     self.weights = weights_init.copy()
     self.r = r_init
@@ -1331,49 +1259,43 @@ class VSMModel:
     self.X = X # D prime dataframe
     self.Y = Y # costs dataframe
     self.n_D = n_D # size of the D dataset
-    self.N = int(mm*2) # considered number of nearest neighbours
+    self.N = nn # considered number of nearest neighbours
     self.M = mm # size for sparsity
     self.tol = tol # tolerance of the objective function
 
   def regularized_loss(self,params):
       '''
-      :param params: weights and r
-      :return: regularized loss function
+      :param params: weights
+      :return: S regularized loss function
       '''
 
       pp = params.copy()
       self.weights = pp[:-1]
       self.r = pp[-1]
-      #n_Dx = round(len(self.Y)/self.n_D)
+      n_Dx = round(len(self.Y)/self.n_D)
       loss_tot = self.loss_function(self.X, self.Y, self.n_D,self.M,self.weights,self.r)
       # S regularization
-      #loss_tot_reg = loss_tot + ((self.reg_w**2)/(n_Dx**2)) * np.sum(np.square(np.log(np.square(self.weights / self.weights_init)))) + (self.reg_r ** 2) * np.square(np.log(np.square(self.r / self.r_init)))
-      #loss_tot_reg = loss_tot + ((self.reg_w ** 2) / (n_Dx ** 2)) * np.sum(np.square(np.log(self.weights / self.weights_init))) + (self.reg_r**2) * np.square(np.log(np.square(self.r / self.r_init)))
-      loss_tot_reg = loss_tot + (self.reg_w ** 2) * np.sum(np.square(np.log(self.weights / self.weights_init))) + (self.reg_r ** 2) * np.square(np.log(np.square(self.r / self.r_init)))
+      loss_tot_reg = loss_tot + ((self.reg_w**2)/(n_Dx**2)) * np.sum(np.square(np.log(np.square(self.weights / self.weights_init))))
       return loss_tot_reg
 
 
   def jac_regularized_loss(self,params):
       '''
-      :param params: weights and r
-      :return: regularized jacobian of the loss function
+      :param params: weights
+      :return: S regularized first derivative of the loss function
       '''
 
       pp = params.copy()
       self.weights = pp[:-1]
       self.r = pp[-1]
-      #n_Dx = round(len(self.Y)/self.n_D)
+      n_Dx = round(len(self.Y)/self.n_D)
       der_loss_tot = self.jac_loss_function(self.X, self.Y, self.n_D, self.M, self.weights,self.r)
-
       # S regularization
-      #der_loss_tot_reg = der_loss_tot[:-1] + 4 * (1/self.weights) * ((self.reg_w**2)/(n_Dx**2)) * np.log(np.square(self.weights/self.weights_init))
-      #der_loss_tot_reg = der_loss_tot[:-1] + 2 * (1 / self.weights) * ((self.reg_w ** 2) / (n_Dx ** 2)) * np.log(self.weights / self.weights_init)
-      der_loss_tot_reg = der_loss_tot[:-1] + 2 * (1 / self.weights) * (self.reg_w ** 2) * np.log(self.weights / self.weights_init)
-      der_loss_tot_reg = np.append(der_loss_tot_reg , (der_loss_tot[-1] + 4 * (1/self.r) * (self.reg_r**2) * np.log(np.square(self.r/self.r_init))))
+      der_loss_tot_reg = der_loss_tot[:-1] + 4 * (1/self.weights) * ((self.reg_w**2)/(n_Dx**2)) * np.log(np.square(self.weights/self.weights_init))
+      der_loss_tot_reg = np.append(der_loss_tot_reg , der_loss_tot[-1])
       return der_loss_tot_reg
 
-
-  def train(self,maxiter=250,disp=False):
+  def fit(self,maxiter=250,disp=False):
     # Initialize weights
     if type(self.weights_init) == type(None):
         self.weights_init = np.ones(round(len(self.X.iloc[0,:])/2))
@@ -1383,8 +1305,9 @@ class VSMModel:
 
     params = np.append(self.weights_init,self.r_init)
     print("Training...")
-    #results = minimize(fun=self.regularized_loss, x0=params, jac=self.jac_regularized_loss,method='L-BFGS-B', options={'maxiter': maxiter,'gtol': self.tol,'disp' : disp})
-    results = minimize(fun=self.regularized_loss, x0=params, jac=self.jac_regularized_loss, method='SLSQP', options={'maxiter': maxiter, 'ftol':self.tol,'disp': disp})
+    #print(results)
+    results = minimize(fun=self.regularized_loss, x0=params, jac=self.jac_regularized_loss,method='L-BFGS-B', options={'maxiter': maxiter,'gtol': self.tol,'disp' : disp})
+    #results = minimize(fun=self.regularized_loss, x0=params, jac=self.jac_regularized_loss, method='SLSQP', options={'maxiter': maxiter, 'ftol':self.tol,'disp': disp})
     self.weights = results.x[:-1]
     self.r = results.x[-1]
     self.weights_init = self.weights.copy()
@@ -1394,7 +1317,7 @@ class VSMModel:
   def predict(self,id_new,x,cold_data_in,warm_data_out):
       '''
       Prediction of the index in the cold-started database for a smarter initialization in the new situation x
-      :param self: the VSM model
+      :param self: the TP model
       :param: id_new: index of the test sample in the Dx dataframe
       :param x: new situation
       :param cold_data_in: memory. it must have a size of n_D
@@ -1460,7 +1383,7 @@ class VSMModel:
   def predict_init(self,x,cold_data_features,cold_data_init):
       '''
       Prediction of the index in the cold-started database for a smarter initialization in the new situation x
-      :param self: the VSM model
+      :param self: the TP model
       :param: id_new: index of the test sample in the Dx dataframe
       :param x: new situation
       :param cold_data_features: memory. it must have a size of n_D
@@ -1493,114 +1416,6 @@ class VSMModel:
 
       for i in range(n_D):
         sims.append(k_sim_sigma(x, cold_data_features.iloc[i,0:f_dim], w, sigma))
-      sims_df = pd.DataFrame({'id': idd,'sims': sims})
-      sims_sorted_df = sims_df.sort(['sims'], ascending=False)
-      cold_data_init_c = cold_data_init.loc[sims_sorted_df.index]
-      sims_sorted_df = sims_sorted_df.reset_index(drop=True)
-      cold_data_init_c = cold_data_init_c.reset_index(drop=True)
-      sims_id_sorted_df = sims_sorted_df['id']
-      sims_s_sorted_df = sims_sorted_df['sims']
-      nn_id = sims_id_sorted_df.iloc[0:nn] # indexes of the nn nearest neighbours
-      nn_sims = sims_s_sorted_df.iloc[0:nn] # similarities of the nn nearest neighbours
-      nn_sims_sum = np.sum(nn_sims)
-
-      qi_sum = np.zeros(cold_data_init_c.shape[1])
-      for i in range(nn):
-        sim = nn_sims.iloc[i]
-        qi = cold_data_init_c.iloc[i,:]
-        qi_sum = np.add(qi_sum,np.multiply(qi,sim))
-
-      if(nn_sims_sum < 1e-60):
-        qi_pred = np.divide(qi_sum, 1e+60)
-      else:
-        qi_pred = np.divide(qi_sum,nn_sims_sum)
-
-      return qi_pred
-
-# --- Class Euclidean Model --- #
-class EuclideanModel:
-  """
-    Euclidean Similarity Model
-  """
-
-  def __init__(self, X=None, Y=None,n_D=1,mm=5):
-    self.loss_function = NNopt_loss_function_err_eucl
-    self.X = X # D prime dataframe
-    self.Y = Y # costs dataframe
-    self.n_D = n_D # size of the D dataset
-    self.N = int(mm*2) # considered number of nearest neighbours
-    self.M = mm # size for sparsity
-
-  def predict(self,id_new,x,cold_data_in,warm_data_out):
-      '''
-      Prediction of the index in the cold-started database for a smarter initialization in the new situation x
-      :param self: the Euclidean model
-      :param: id_new: index of the test sample in the Dx dataframe
-      :param x: new situation
-      :param cold_data_in: memory. it must have a size of n_D
-      :param: warm_data_out: outputs of the test samples
-      :return: the index of the sample in the cold-started database (D_dataframe)
-      '''
-      c_data_in = cold_data_in.copy()
-      w_out = warm_data_out.copy()
-
-      f_dim = len(x) # features dimensions
-      mm = self.M
-      nn = self.N
-      n_D = self.n_D
-      idd = (np.arange(n_D)).tolist()
-
-      sims = []
-      for i in range(n_D):
-        sims.append(k_eucl_sim(x, c_data_in.iloc[i,0:f_dim]))
-      sims_df = pd.DataFrame({'id': idd,'sims': sims})
-      sims_sorted_df = sims_df.sort(['sims'], ascending=False)
-      sims_sorted_df = sims_sorted_df.reset_index(drop=True)
-      sims_id_sorted_df = sims_sorted_df['id']
-      sims_s_sorted_df = sims_sorted_df['sims']
-      nn_id = sims_id_sorted_df.iloc[0:nn] # indexes of the nn nearest neighbours
-      nn_sims = sims_s_sorted_df.iloc[0:nn] # similarities of the nn nearest neighbours
-      nn_sims_sum = np.sum(nn_sims)
-
-      cc = 0
-      der_cc = 0
-      for i in range(nn):
-        id_warm = (id_new*n_D) + nn_id.iloc[i]
-        sim = nn_sims.iloc[i]
-        cost = w_out.iloc[id_warm, 0]
-        der_cost = w_out.iloc[id_warm, 1]
-        cc += (sim * cost)
-        der_cc += (sim * der_cost)
-
-      if(nn_sims_sum < 1e-60):
-          pred_cc = (cc * 1e+60)
-          pred_der_cc = (der_cc * 1e+60)
-      else:
-          pred_cc = (cc/nn_sims_sum)
-          pred_der_cc = (der_cc/nn_sims_sum)
-
-      return [pred_cc,pred_der_cc]
-
-  def predict_init(self,x,cold_data_features,cold_data_init):
-      '''
-      Prediction of the index in the cold-started database for a smarter initialization in the new situation x
-      :param self: the Euclidean model
-      :param: id_new: index of the test sample in the Dx dataframe
-      :param x: new situation
-      :param cold_data_features: memory. it must have a size of n_D
-      :param: cold_data_init: outputs of the test samples
-      :return: the index of the sample in the cold-started database (D_dataframe)
-      '''
-
-      f_dim = len(x) # features dimensions
-      mm = self.M
-      nn = self.N
-      n_D = self.n_D
-      idd = (np.arange(n_D)).tolist()
-
-      sims = []
-      for i in range(n_D):
-        sims.append(k_eucl_sim(x, cold_data_features.iloc[i,0:f_dim]))
       sims_df = pd.DataFrame({'id': idd,'sims': sims})
       sims_sorted_df = sims_df.sort(['sims'], ascending=False)
       cold_data_init_c = cold_data_init.loc[sims_sorted_df.index]
