@@ -349,104 +349,157 @@ def preprocess_features_warm(task_dataframe,nn):
     A DataFrame that contains the features to be used for the model.
   """
 
-  n_samples = round(len(task_dataframe) / nn) # number of samples of the output features
+  n_samples = int(len(task_dataframe) / nn) # number of samples of the output features
 
   # --- upper-limb information --- #
   # elbow
   elb_cols = ["elbow_x_warm_mm","elbow_y_warm_mm","elbow_z_warm_mm"]
+  elb_cols_cold = ["elbow_x_mm","elbow_y_mm","elbow_z_mm"]
   elbow_pos_features = pd.DataFrame(index = range(n_samples), columns = elb_cols)
-  for ii in range(n_samples):
-    elbow_pos_features.loc[ii] = task_dataframe[elb_cols].iloc[round(ii*nn)]
-  #print(elbow_pos_features)
+  elbow_pos_features_cold = pd.DataFrame(index = range(nn), columns = elb_cols_cold)
   # wrist
   wri_cols = ["wrist_x_warm_mm", "wrist_y_warm_mm", "wrist_z_warm_mm"]
+  wri_cols_cold = ["wrist_x_mm", "wrist_y_mm", "wrist_z_mm"]
   wrist_pos_features = pd.DataFrame(index = range(n_samples), columns = wri_cols)
-  for ii in range(n_samples):
-    wrist_pos_features.loc[ii] = task_dataframe[wri_cols].iloc[round(ii*nn)]
-  #print(wrist_pos_features)
+  wrist_pos_features_cold = pd.DataFrame(index = range(nn), columns = wri_cols_cold)
   # hand
   hand_cols = ["hand_x_warm_mm", "hand_y_warm_mm", "hand_z_warm_mm"]
+  hand_cols_cold = ["hand_x_mm", "hand_y_mm", "hand_z_mm"]
   hand_pos_features = pd.DataFrame(index = range(n_samples), columns = hand_cols)
-  for ii in range(n_samples):
-    hand_pos_features.loc[ii] = task_dataframe[hand_cols].iloc[round(ii*nn)]
-  #print(hand_pos_features)
+  hand_pos_features_cold = pd.DataFrame(index = range(nn), columns = hand_cols_cold)
   # thumb 1
   thumb_1_cols = ["thumb_1_x_warm_mm", "thumb_1_y_warm_mm", "thumb_1_z_warm_mm"]
+  thumb_1_cols_cold = ["thumb_1_x_mm", "thumb_1_y_mm", "thumb_1_z_mm"]
   thumb_1_pos_features = pd.DataFrame(index = range(n_samples), columns = thumb_1_cols)
-  for ii in range(n_samples):
-    thumb_1_pos_features.loc[ii] = task_dataframe[thumb_1_cols].iloc[round(ii*nn)]
-  #print(thumb_1_pos_features)
+  thumb_1_pos_features_cold = pd.DataFrame(index = range(nn), columns = thumb_1_cols_cold)
   # thumb 2
   thumb_2_cols = ["thumb_2_x_warm_mm", "thumb_2_y_warm_mm", "thumb_2_z_warm_mm"]
+  thumb_2_cols_cold = ["thumb_2_x_mm", "thumb_2_y_mm", "thumb_2_z_mm"]
   thumb_2_pos_features = pd.DataFrame(index = range(n_samples), columns = thumb_2_cols)
-  for ii in range(n_samples):
-    thumb_2_pos_features.loc[ii] = task_dataframe[thumb_2_cols].iloc[round(ii*nn)]
-  #print(thumb_2_pos_features)
+  thumb_2_pos_features_cold = pd.DataFrame(index = range(nn), columns = thumb_2_cols_cold)
   # thumb tip
   thumb_tip_cols = ["thumb_tip_x_warm_mm", "thumb_tip_y_warm_mm", "thumb_tip_z_warm_mm"]
+  thumb_tip_cols_cold = ["thumb_tip_x_mm", "thumb_tip_y_mm", "thumb_tip_z_mm"]
   thumb_tip_pos_features = pd.DataFrame(index = range(n_samples), columns = thumb_tip_cols)
-  for ii in range(n_samples):
-    thumb_tip_pos_features.loc[ii] = task_dataframe[thumb_tip_cols].iloc[round(ii*nn)]
-  #print(thumb_tip_pos_features)
+  thumb_tip_pos_features_cold = pd.DataFrame(index = range(nn), columns = thumb_tip_cols_cold)
   # index 1
   index_1_cols = ["index_1_x_warm_mm", "index_1_y_warm_mm", "index_1_z_warm_mm"]
+  index_1_cols_cold = ["index_1_x_mm", "index_1_y_mm", "index_1_z_mm"]
   index_1_pos_features = pd.DataFrame(index = range(n_samples), columns = index_1_cols)
-  for ii in range(n_samples):
-    index_1_pos_features.loc[ii] = task_dataframe[index_1_cols].iloc[round(ii*nn)]
-  #print(index_1_pos_features)
+  index_1_pos_features_cold = pd.DataFrame(index = range(nn), columns = index_1_cols_cold)
   # index 2
   index_2_cols = ["index_2_x_warm_mm", "index_2_y_warm_mm", "index_2_z_warm_mm"]
+  index_2_cols_cold = ["index_2_x_mm", "index_2_y_mm", "index_2_z_mm"]
   index_2_pos_features = pd.DataFrame(index = range(n_samples), columns = index_2_cols)
-  for ii in range(n_samples):
-    index_2_pos_features.loc[ii] = task_dataframe[index_2_cols].iloc[round(ii*nn)]
-  #print(index_2_pos_features)
+  index_2_pos_features_cold = pd.DataFrame(index = range(nn), columns = index_2_cols_cold)
   # index tip
   index_tip_cols = ["index_tip_x_warm_mm", "index_tip_y_warm_mm", "index_tip_z_warm_mm"]
+  index_tip_cols_cold = ["index_tip_x_mm", "index_tip_y_mm", "index_tip_z_mm"]
   index_tip_pos_features = pd.DataFrame(index = range(n_samples), columns = index_tip_cols)
-  for ii in range(n_samples):
-    index_tip_pos_features.loc[ii] = task_dataframe[index_tip_cols].iloc[round(ii*nn)]
-  #print(index_tip_pos_features)
+  index_tip_pos_features_cold = pd.DataFrame(index = range(nn), columns = index_tip_cols_cold)
   # middle 1
   middle_1_cols = ["middle_1_x_warm_mm", "middle_1_y_warm_mm", "middle_1_z_warm_mm"]
+  middle_1_cols_cold = ["middle_1_x_mm", "middle_1_y_mm", "middle_1_z_mm"]
   middle_1_pos_features = pd.DataFrame(index = range(n_samples), columns = middle_1_cols)
-  for ii in range(n_samples):
-    middle_1_pos_features.loc[ii] = task_dataframe[middle_1_cols].iloc[round(ii*nn)]
-  #print(middle_1_pos_features)
+  middle_1_pos_features_cold = pd.DataFrame(index = range(nn), columns = middle_1_cols_cold)
   # middle 2
   middle_2_cols = ["middle_2_x_warm_mm", "middle_2_y_warm_mm", "middle_2_z_warm_mm"]
+  middle_2_cols_cold = ["middle_2_x_mm", "middle_2_y_mm", "middle_2_z_mm"]
   middle_2_pos_features = pd.DataFrame(index = range(n_samples), columns = middle_2_cols)
-  for ii in range(n_samples):
-    middle_2_pos_features.loc[ii] = task_dataframe[middle_2_cols].iloc[round(ii*nn)]
-  #print(middle_2_pos_features)
+  middle_2_pos_features_cold = pd.DataFrame(index = range(nn), columns = middle_2_cols_cold)
   # middle tip
   middle_tip_cols = ["middle_tip_x_warm_mm", "middle_tip_y_warm_mm", "middle_tip_z_warm_mm"]
+  middle_tip_cols_cold = ["middle_tip_x_mm", "middle_tip_y_mm", "middle_tip_z_mm"]
   middle_tip_pos_features = pd.DataFrame(index = range(n_samples), columns = middle_tip_cols)
-  for ii in range(n_samples):
-    middle_tip_pos_features.loc[ii] = task_dataframe[middle_tip_cols].iloc[round(ii*nn)]
-  #print(index_tip_pos_features)
-
-  # --- target information --- #
+  middle_tip_pos_features_cold = pd.DataFrame(index = range(nn), columns = middle_tip_cols_cold)
+  # target
   tar_pos_cols = ["target_x_warm_mm", "target_y_warm_mm", "target_z_warm_mm"]
   target_pos_features = pd.DataFrame(index = range(n_samples), columns = tar_pos_cols)
-  for ii in range(n_samples):
-    target_pos_features.loc[ii] = task_dataframe[tar_pos_cols].iloc[round(ii*nn)]
-  #print(target_pos_features)
+  tar_pos_cols_cold = ["target_x_mm", "target_y_mm", "target_z_mm"]
+  target_pos_features_cold = pd.DataFrame(index = range(nn), columns = tar_pos_cols_cold)
   tar_or_cols = ["target_roll_warm_rad", "target_pitch_warm_rad", "target_yaw_warm_rad"]
   target_or_features = pd.DataFrame(index = range(n_samples), columns = tar_or_cols)
-  for ii in range(n_samples):
-    target_or_features.loc[ii] = task_dataframe[tar_or_cols].iloc[round(ii*nn)]
-  #print(target_or_features)
-
-  # --- obstacle 1 information --- #
+  tar_or_cols_cold = ["target_roll_rad", "target_pitch_rad", "target_yaw_rad"]
+  target_or_features_cold = pd.DataFrame(index = range(nn), columns = tar_or_cols_cold)
+  # obstacle 1
   obst_1_pos_cols = ["obstacle_1_x_warm_mm", "obstacle_1_y_warm_mm", "obstacle_1_z_warm_mm"]
   obstacle_1_pos_features = pd.DataFrame(index = range(n_samples), columns = obst_1_pos_cols)
-  for ii in range(n_samples):
-    obstacle_1_pos_features.loc[ii] = task_dataframe[obst_1_pos_cols].iloc[round(ii*nn)]
-  #print(obstacle_1_pos_features)
+  obst_1_pos_cols_cold = ["obstacle_1_x_mm", "obstacle_1_y_mm", "obstacle_1_z_mm"]
+  obstacle_1_pos_features_cold = pd.DataFrame(index = range(nn), columns = obst_1_pos_cols_cold)
   obst_1_or_cols = ["obstacle_1_roll_warm_rad", "obstacle_1_pitch_warm_rad", "obstacle_1_yaw_warm_rad"]
   obstacle_1_or_features = pd.DataFrame(index = range(n_samples), columns = obst_1_or_cols)
+  obst_1_or_cols_cold = ["obstacle_1_roll_rad", "obstacle_1_pitch_rad", "obstacle_1_yaw_rad"]
+  obstacle_1_or_features_cold = pd.DataFrame(index = range(nn), columns = obst_1_or_cols_cold)
+
+  cold_datasets = []
   for ii in range(n_samples):
+    elbow_pos_features.loc[ii] = task_dataframe[elb_cols].iloc[round(ii*nn)]
+    elbow_pos_features_cold = task_dataframe[elb_cols_cold].iloc[round(ii*nn):round((ii+1)*nn)]
+    wrist_pos_features.loc[ii] = task_dataframe[wri_cols].iloc[round(ii*nn)]
+    wrist_pos_features_cold = task_dataframe[wri_cols_cold].iloc[round(ii*nn):round((ii+1)*nn)]
+    hand_pos_features.loc[ii] = task_dataframe[hand_cols].iloc[round(ii*nn)]
+    hand_pos_features_cold = task_dataframe[hand_cols_cold].iloc[round(ii*nn):round((ii+1)*nn)]
+    thumb_1_pos_features.loc[ii] = task_dataframe[thumb_1_cols].iloc[round(ii*nn)]
+    thumb_1_pos_features_cold = task_dataframe[thumb_1_cols_cold].iloc[round(ii*nn):round((ii+1)*nn)]
+    thumb_2_pos_features.loc[ii] = task_dataframe[thumb_2_cols].iloc[round(ii*nn)]
+    thumb_2_pos_features_cold = task_dataframe[thumb_2_cols_cold].iloc[round(ii*nn):round((ii+1)*nn)]
+    thumb_tip_pos_features.loc[ii] = task_dataframe[thumb_tip_cols].iloc[round(ii*nn)]
+    thumb_tip_pos_features_cold = task_dataframe[thumb_tip_cols_cold].iloc[round(ii*nn):round((ii+1)*nn)]
+    index_1_pos_features.loc[ii] = task_dataframe[index_1_cols].iloc[round(ii*nn)]
+    index_1_pos_features_cold = task_dataframe[index_1_cols_cold].iloc[round(ii*nn):round((ii+1)*nn)]
+    index_2_pos_features.loc[ii] = task_dataframe[index_2_cols].iloc[round(ii*nn)]
+    index_2_pos_features_cold = task_dataframe[index_2_cols_cold].iloc[round(ii*nn):round((ii+1)*nn)]
+    index_tip_pos_features.loc[ii] = task_dataframe[index_tip_cols].iloc[round(ii*nn)]
+    index_tip_pos_features_cold = task_dataframe[index_tip_cols_cold].iloc[round(ii*nn):round((ii+1)*nn)]
+    middle_1_pos_features.loc[ii] = task_dataframe[middle_1_cols].iloc[round(ii*nn)]
+    middle_1_pos_features_cold = task_dataframe[middle_1_cols_cold].iloc[round(ii*nn):round((ii+1)*nn)]
+    middle_2_pos_features.loc[ii] = task_dataframe[middle_2_cols].iloc[round(ii*nn)]
+    middle_2_pos_features_cold = task_dataframe[middle_2_cols_cold].iloc[round(ii*nn):round((ii+1)*nn)]
+    middle_tip_pos_features.loc[ii] = task_dataframe[middle_tip_cols].iloc[round(ii*nn)]
+    middle_tip_pos_features_cold = task_dataframe[middle_tip_cols_cold].iloc[round(ii*nn):round((ii+1)*nn)]
+    target_pos_features.loc[ii] = task_dataframe[tar_pos_cols].iloc[round(ii*nn)]
+    target_pos_features_cold = task_dataframe[tar_pos_cols_cold].iloc[round(ii*nn):round((ii+1)*nn)]
+    target_or_features.loc[ii] = task_dataframe[tar_or_cols].iloc[round(ii*nn)]
+    target_or_features_cold = task_dataframe[tar_or_cols_cold].iloc[round(ii*nn):round((ii+1)*nn)]
+    obstacle_1_pos_features.loc[ii] = task_dataframe[obst_1_pos_cols].iloc[round(ii*nn)]
+    obstacle_1_pos_features_cold = task_dataframe[obst_1_pos_cols_cold].iloc[round(ii*nn):round((ii+1)*nn)]
     obstacle_1_or_features.loc[ii] = task_dataframe[obst_1_or_cols].iloc[round(ii*nn)]
+    obstacle_1_or_features_cold = task_dataframe[obst_1_or_cols_cold].iloc[round(ii*nn):round((ii+1)*nn)]
+    # cold_dataset composition
+    cold_features = elbow_pos_features_cold.copy()
+    cold_features = cold_features.join(wrist_pos_features_cold)
+    cold_features = cold_features.join(hand_pos_features_cold)
+    cold_features = cold_features.join(thumb_1_pos_features_cold)
+    cold_features = cold_features.join(thumb_2_pos_features_cold)
+    cold_features = cold_features.join(thumb_tip_pos_features_cold)
+    cold_features = cold_features.join(index_1_pos_features_cold)
+    cold_features = cold_features.join(index_2_pos_features_cold)
+    cold_features = cold_features.join(index_tip_pos_features_cold)
+    cold_features = cold_features.join(middle_1_pos_features_cold)
+    cold_features = cold_features.join(middle_2_pos_features_cold)
+    cold_features = cold_features.join(middle_tip_pos_features_cold)
+    cold_features = cold_features.join(target_pos_features_cold)
+    cold_features = cold_features.join(target_or_features_cold)
+    cold_features = cold_features.join(obstacle_1_pos_features_cold)
+    cold_features = cold_features.join(obstacle_1_or_features_cold)
+    processed_cold_features = preprocess_features_cold(cold_features)
+    cold_datasets.append(processed_cold_features)
+
+  #print(elbow_pos_features)
+  #print(wrist_pos_features)
+  #print(hand_pos_features)
+  #print(thumb_1_pos_features)
+  #print(thumb_2_pos_features)
+  #print(thumb_tip_pos_features)
+  #print(index_1_pos_features)
+  #print(index_2_pos_features)
+  #print(index_tip_pos_features)
+  #print(middle_1_pos_features)
+  #print(middle_2_pos_features)
+  #print(middle_tip_pos_features)
+  #print(target_pos_features)
+  #print(target_or_features)
+  #print(obstacle_1_pos_features)
   #print(obstacle_1_or_features)
 
   # --- elbow --- #
@@ -701,55 +754,65 @@ def preprocess_features_warm(task_dataframe,nn):
 
 
   # --- collect data --- #
-  processed_features = elbow_pos_features.copy()
+  processed_warm_features = elbow_pos_features.copy()
   # raw features
-  processed_features = processed_features.join(wrist_pos_features)
-  processed_features = processed_features.join(hand_pos_features)
-  processed_features = processed_features.join(thumb_1_pos_features)
-  processed_features = processed_features.join(thumb_2_pos_features)
-  processed_features = processed_features.join(thumb_tip_pos_features)
-  processed_features = processed_features.join(index_1_pos_features)
-  processed_features = processed_features.join(index_2_pos_features)
-  processed_features = processed_features.join(index_tip_pos_features)
-  processed_features = processed_features.join(middle_1_pos_features)
-  processed_features = processed_features.join(middle_2_pos_features)
-  processed_features = processed_features.join(middle_tip_pos_features)
-  processed_features = processed_features.join(target_pos_features)
-  processed_features = processed_features.join(target_or_features)
-  processed_features = processed_features.join(obstacle_1_pos_features)
-  processed_features = processed_features.join(obstacle_1_or_features)
+  processed_warm_features = processed_warm_features.join(wrist_pos_features)
+  processed_warm_features = processed_warm_features.join(hand_pos_features)
+  processed_warm_features = processed_warm_features.join(thumb_1_pos_features)
+  processed_warm_features = processed_warm_features.join(thumb_2_pos_features)
+  processed_warm_features = processed_warm_features.join(thumb_tip_pos_features)
+  processed_warm_features = processed_warm_features.join(index_1_pos_features)
+  processed_warm_features = processed_warm_features.join(index_2_pos_features)
+  processed_warm_features = processed_warm_features.join(index_tip_pos_features)
+  processed_warm_features = processed_warm_features.join(middle_1_pos_features)
+  processed_warm_features = processed_warm_features.join(middle_2_pos_features)
+  processed_warm_features = processed_warm_features.join(middle_tip_pos_features)
+  processed_warm_features = processed_warm_features.join(target_pos_features)
+  processed_warm_features = processed_warm_features.join(target_or_features)
+  processed_warm_features = processed_warm_features.join(obstacle_1_pos_features)
+  processed_warm_features = processed_warm_features.join(obstacle_1_or_features)
   # processed features
-  processed_features = processed_features.join(elb_tar_diff)
-  processed_features = processed_features.join(elb_obst_1_diff)
-  processed_features = processed_features.join(wri_tar_diff)
-  processed_features = processed_features.join(wri_obst_1_diff)
-  processed_features = processed_features.join(hand_tar_diff)
-  processed_features = processed_features.join(hand_obst_1_diff)
-  processed_features = processed_features.join(thumb_1_tar_diff)
-  processed_features = processed_features.join(thumb_1_obst_1_diff)
-  processed_features = processed_features.join(thumb_2_tar_diff)
-  processed_features = processed_features.join(thumb_2_obst_1_diff)
-  processed_features = processed_features.join(thumb_tip_tar_diff)
-  processed_features = processed_features.join(thumb_tip_obst_1_diff)
-  processed_features = processed_features.join(index_1_tar_diff)
-  processed_features = processed_features.join(index_1_obst_1_diff)
-  processed_features = processed_features.join(index_2_tar_diff)
-  processed_features = processed_features.join(index_2_obst_1_diff)
-  processed_features = processed_features.join(index_tip_tar_diff)
-  processed_features = processed_features.join(index_tip_obst_1_diff)
-  processed_features = processed_features.join(middle_1_tar_diff)
-  processed_features = processed_features.join(middle_1_obst_1_diff)
-  processed_features = processed_features.join(middle_2_tar_diff)
-  processed_features = processed_features.join(middle_2_obst_1_diff)
-  processed_features = processed_features.join(middle_tip_tar_diff)
-  processed_features = processed_features.join(middle_tip_obst_1_diff)
-  processed_features = processed_features.join(tar_obst_1_diff)
+  processed_warm_features = processed_warm_features.join(elb_tar_diff)
+  processed_warm_features = processed_warm_features.join(elb_obst_1_diff)
+  processed_warm_features = processed_warm_features.join(wri_tar_diff)
+  processed_warm_features = processed_warm_features.join(wri_obst_1_diff)
+  processed_warm_features = processed_warm_features.join(hand_tar_diff)
+  processed_warm_features = processed_warm_features.join(hand_obst_1_diff)
+  processed_warm_features = processed_warm_features.join(thumb_1_tar_diff)
+  processed_warm_features = processed_warm_features.join(thumb_1_obst_1_diff)
+  processed_warm_features = processed_warm_features.join(thumb_2_tar_diff)
+  processed_warm_features = processed_warm_features.join(thumb_2_obst_1_diff)
+  processed_warm_features = processed_warm_features.join(thumb_tip_tar_diff)
+  processed_warm_features = processed_warm_features.join(thumb_tip_obst_1_diff)
+  processed_warm_features = processed_warm_features.join(index_1_tar_diff)
+  processed_warm_features = processed_warm_features.join(index_1_obst_1_diff)
+  processed_warm_features = processed_warm_features.join(index_2_tar_diff)
+  processed_warm_features = processed_warm_features.join(index_2_obst_1_diff)
+  processed_warm_features = processed_warm_features.join(index_tip_tar_diff)
+  processed_warm_features = processed_warm_features.join(index_tip_obst_1_diff)
+  processed_warm_features = processed_warm_features.join(middle_1_tar_diff)
+  processed_warm_features = processed_warm_features.join(middle_1_obst_1_diff)
+  processed_warm_features = processed_warm_features.join(middle_2_tar_diff)
+  processed_warm_features = processed_warm_features.join(middle_2_obst_1_diff)
+  processed_warm_features = processed_warm_features.join(middle_tip_tar_diff)
+  processed_warm_features = processed_warm_features.join(middle_tip_obst_1_diff)
+  processed_warm_features = processed_warm_features.join(tar_obst_1_diff)
+
+  processed_warm_targets = preprocess_targets_warm(task_dataframe)
+
+  # D prime dataset composition
+  cols_tot = processed_warm_features.columns.values.tolist() + cold_datasets[0].columns.values.tolist() + processed_warm_targets.columns.values.tolist()
+  D_prime = pd.DataFrame(index = range(len(processed_warm_targets)), columns = cols_tot)
+  for jj in range(len(processed_warm_features)):
+      for ii in range(len(cold_datasets[0])):
+          D_prime.iloc[ii+jj*len(cold_datasets[0])] = pd.concat([processed_warm_features.iloc[jj], cold_datasets[jj].iloc[ii], processed_warm_targets.iloc[ii+jj*len(cold_datasets[0])]])
+
+  D_prime = D_prime.astype(float)
+
+  return D_prime
 
 
-  return processed_features
-
-
-def prepocess_features_complete(D_dataframe,Dx_dataframe,cost_dataframe):
+def preprocess_features_complete(D_dataframe,Dx_dataframe,cost_dataframe):
   """Prepares the complete dataframe for the loss function
   Args:
     D_dataframe: dataframe of training situations
@@ -768,7 +831,6 @@ def prepocess_features_complete(D_dataframe,Dx_dataframe,cost_dataframe):
 
   processed_features = processed_features.astype(float)
   return processed_features
-
 
 def preprocess_targets_cold(task_dataframe):
   """Prepares target features of the cold dataset.
@@ -836,7 +898,7 @@ def preprocess_targets_warm(task_dataframe):
     A DataFrame that contains the target features.
   """
 
-  selected_targets = task_dataframe[["error_plan_warm","mean_der_error_plan_warm","iterations_plan_warm"]]
+  selected_targets = task_dataframe[["error_plan_warm","mean_der_error_plan_warm"]]
   output_targets = selected_targets.copy()
 
   return (output_targets)
@@ -919,7 +981,7 @@ def NNopt_loss_function_err_eucl(X_df,costs_df,n_D,M,f_dim):
   #print(xi_df.iloc[:,:])
 
   L = 0
-  n_Dx = round(n_samples/n_D)
+  n_Dx = int(n_samples/n_D)
   mm = M # number of nearest neighbors for sparsity
   nn = int(M*2)  # considered number of nearest neighbors
 
@@ -965,8 +1027,8 @@ def NNopt_loss_function_err_sigma(X_df,costs_df,n_D,M,W,r):
   :return:
   """
   f_dim = W.shape[0]
-  xj_df = X_df.iloc[:,:f_dim]
-  xi_df = X_df.iloc[0:n_D, f_dim:(2*f_dim)]
+  xj_df = X_df.iloc[:,0:f_dim]
+  #xi_df = X_df.iloc[0:n_D, f_dim:(2*f_dim)]
   n_samples = len(costs_df)
 
   #print(costs_df.head())
@@ -974,7 +1036,7 @@ def NNopt_loss_function_err_sigma(X_df,costs_df,n_D,M,W,r):
   #print(xi_df.iloc[:,:])
 
   L = 0
-  n_Dx = round(n_samples/n_D)
+  n_Dx = int(n_samples/n_D)
   mm = M # number of nearest neighbors for sparsity
   nn = int(M*2)  # considered number of nearest neighbors
   W2 = np.square(W.copy())
@@ -983,6 +1045,7 @@ def NNopt_loss_function_err_sigma(X_df,costs_df,n_D,M,W,r):
     dm_vect = []
     xdiff2_m = []
     ratio_m = []
+    xi_df = X_df.iloc[jj*n_D:(jj+1)*n_D, f_dim:(2*f_dim)]
     for ii in range(n_D):
         xii = xi_df.iloc[ii]
         xdiff2m = np.square(np.array(xj) - np.array(xii))
@@ -1040,10 +1103,10 @@ def jac_NNopt_loss_function_err_sigma(X_df,costs_df,n_D,M,W,r):
     """
 
     f_dim = len(W)
-    xj_df = X_df.copy().iloc[:, :f_dim]
-    xi_df = X_df.copy().iloc[0:n_D, f_dim:(2 * f_dim)]
+    xj_df = X_df.iloc[:, 0:f_dim]
+    #xi_df = X_df.copy().iloc[0:n_D, f_dim:(2 * f_dim)]
     n_samples = len(costs_df)
-    n_Dx = round(n_samples/n_D)
+    n_Dx = int(n_samples/n_D)
     mm = M  # number of nearest neighbors for sparsity
     nn = int(M*2) # considered number of nearest neighbors
     W2 = np.square(W.copy())
@@ -1055,6 +1118,7 @@ def jac_NNopt_loss_function_err_sigma(X_df,costs_df,n_D,M,W,r):
         dm_vect = []
         xdiff2_m = []
         ratio_m = []
+        xi_df = X_df.iloc[jj*n_D:(jj+1)*n_D, f_dim:(2*f_dim)]
         for ii in range(n_D):
             xii = xi_df.iloc[ii]
             xdiff2m = np.square(np.array(xj) - np.array(xii))
@@ -1316,7 +1380,7 @@ def denormalize_z_score(processed_features,processed_features_mean, processed_fe
 # --- Class VSM Model --- #
 class VSMModel:
   """
-    Variable Similarity model: fit by minimizing the provided loss_function with L1 regularization
+    Variable Similarity model
   """
 
   def __init__(self, X=None, Y=None, n_D=1,weights_init=None,r_init=0.6,mm=5,reg_w=0.04,reg_r=0.1,tol=1e-06):
@@ -1383,8 +1447,8 @@ class VSMModel:
 
     params = np.append(self.weights_init,self.r_init)
     print("Training...")
-    #results = minimize(fun=self.regularized_loss, x0=params, jac=self.jac_regularized_loss,method='L-BFGS-B', options={'maxiter': maxiter,'gtol': self.tol,'disp' : disp})
-    results = minimize(fun=self.regularized_loss, x0=params, jac=self.jac_regularized_loss, method='SLSQP', options={'maxiter': maxiter, 'ftol':self.tol,'disp': disp})
+    results = minimize(fun=self.regularized_loss, x0=params, jac=self.jac_regularized_loss,method='L-BFGS-B', options={'maxiter': maxiter,'gtol': self.tol,'disp' : disp})
+    #results = minimize(fun=self.regularized_loss, x0=params, jac=self.jac_regularized_loss, method='SLSQP', options={'maxiter': maxiter, 'ftol':self.tol,'disp': disp})
     self.weights = results.x[:-1]
     self.r = results.x[-1]
     self.weights_init = self.weights.copy()
