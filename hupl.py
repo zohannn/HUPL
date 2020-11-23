@@ -1380,7 +1380,7 @@ def denormalize_z_score(processed_features,processed_features_mean, processed_fe
 # --- Class VSM Model --- #
 class VSMModel:
   """
-    Variable Similarity model
+    Variable-kernel Similarity model
   """
 
   def __init__(self, X=None, Y=None, n_D=1,weights_init=None,r_init=0.6,mm=5,reg_w=0.04,reg_r=0.1,tol=1e-06):
@@ -1584,7 +1584,7 @@ class VSMModel:
 # --- Class Euclidean Model --- #
 class EuclideanModel:
   """
-    Euclidean Similarity Model
+    Euclidean-kernel Similarity Model
   """
 
   def __init__(self, X=None, Y=None,n_D=1,mm=5):
