@@ -898,7 +898,7 @@ def preprocess_targets_warm(task_dataframe):
     A DataFrame that contains the target features.
   """
 
-  selected_targets = task_dataframe[["error_plan_warm","mean_der_error_plan_warm"]]
+  selected_targets = task_dataframe[["error_plan_warm","mean_der_error_plan_warm","error_bounce_warm","mean_der_error_bounce_warm"]]
   output_targets = selected_targets.copy()
 
   return (output_targets)
@@ -993,7 +993,7 @@ def NNopt_loss_function_err_eucl(X_df,costs_df,n_D,M,f_dim):
         xii = xi_df.iloc[ii]
         k_sim_vect.append(k_eucl_sim(xj, xii))
     k_sim_df = pd.DataFrame({'k_sim': k_sim_vect})
-    k_sim_sorted_df = k_sim_df.sort(['k_sim'], ascending=False)
+    k_sim_sorted_df = k_sim_df.sort_values(by=['k_sim'], ascending=False)
     k_sim_sorted_df = k_sim_sorted_df.reset_index(drop=True)
     k_sim_sored_values = k_sim_sorted_df['k_sim']
     Z = np.sum(k_sim_sored_values.iloc[0:nn])
@@ -1008,7 +1008,7 @@ def NNopt_loss_function_err_eucl(X_df,costs_df,n_D,M,f_dim):
         cc = costs_df.iloc[(jj * n_D)+ii, 0]  # total cost
         E_vect.append(cc * reg * (k_eucl_sim(xj, xii)))
     E_df = pd.DataFrame({'k_sim': k_sim_vect,'E_value': E_vect})
-    E_sorted_df = E_df.sort(['k_sim'], ascending=False)
+    E_sorted_df = E_df.sort_values(by=['k_sim'], ascending=False)
     E_sorted_df = E_sorted_df.reset_index(drop=True)
     E_value_sorted_df = E_sorted_df['E_value']
     E = np.sum(E_value_sorted_df.iloc[0:nn])
@@ -1055,7 +1055,7 @@ def NNopt_loss_function_err_sigma(X_df,costs_df,n_D,M,W,r):
         ratio = xdiff2m/dm
         ratio_m.append(ratio)
     dm_df = pd.DataFrame({'distance_m': dm_vect, 'xdiff2_m': xdiff2_m, 'ratio_m': ratio_m})
-    dm_sorted_df = dm_df.sort(['distance_m'], ascending=True)
+    dm_sorted_df = dm_df.sort_values(by=['distance_m'], ascending=True)
     dm_sorted_df = dm_sorted_df.reset_index(drop=True)
     dist_m_sorted_df = dm_sorted_df['distance_m']
     xdiff2_m_sorted_df = dm_sorted_df['xdiff2_m']
@@ -1068,7 +1068,7 @@ def NNopt_loss_function_err_sigma(X_df,costs_df,n_D,M,W,r):
         xii = xi_df.iloc[ii]
         k_sim_vect.append(k_sim_sigma(xj, xii, W, sigma))
     k_sim_df = pd.DataFrame({'k_sim': k_sim_vect})
-    k_sim_sorted_df = k_sim_df.sort(['k_sim'], ascending=False)
+    k_sim_sorted_df = k_sim_df.sort_values(by=['k_sim'], ascending=False)
     k_sim_sorted_df = k_sim_sorted_df.reset_index(drop=True)
     k_sim_sored_values = k_sim_sorted_df['k_sim']
     Z = np.sum(k_sim_sored_values.iloc[0:nn])
@@ -1083,7 +1083,7 @@ def NNopt_loss_function_err_sigma(X_df,costs_df,n_D,M,W,r):
         cc = costs_df.iloc[(jj * n_D)+ii, 0]  # total cost
         E_vect.append(cc * reg * (k_sim_sigma(xj, xii, W, sigma)))
     E_df = pd.DataFrame({'k_sim': k_sim_vect,'E_value': E_vect})
-    E_sorted_df = E_df.sort(['k_sim'], ascending=False)
+    E_sorted_df = E_df.sort_values(by=['k_sim'], ascending=False)
     E_sorted_df = E_sorted_df.reset_index(drop=True)
     E_value_sorted_df = E_sorted_df['E_value']
     E = np.sum(E_value_sorted_df.iloc[0:nn])
@@ -1128,7 +1128,7 @@ def jac_NNopt_loss_function_err_sigma(X_df,costs_df,n_D,M,W,r):
             ratio = xdiff2m/dm
             ratio_m.append(ratio)
         dm_df = pd.DataFrame({'distance_m': dm_vect, 'xdiff2_m': xdiff2_m, 'ratio_m': ratio_m})
-        dm_sorted_df = dm_df.sort(['distance_m'], ascending=True)
+        dm_sorted_df = dm_df.sort_values(by=['distance_m'], ascending=True)
         dm_sorted_df = dm_sorted_df.reset_index(drop=True)
         dist_m_sorted_df = dm_sorted_df['distance_m']
         xdiff2_m_sorted_df = dm_sorted_df['xdiff2_m']
@@ -1148,7 +1148,7 @@ def jac_NNopt_loss_function_err_sigma(X_df,costs_df,n_D,M,W,r):
             dk_sim_r_vect.append((k_sim_sigma(xj, xii, W, sigma) * dji2) / (r * (sigma**2)))
 
         k_df = pd.DataFrame({'k_sim': k_sim_vect,'dk_sim_w': dk_sim_w_vect,'dk_sim_r': dk_sim_r_vect})
-        k_sorted_df = k_df.sort(['k_sim'], ascending=False)
+        k_sorted_df = k_df.sort_values(by=['k_sim'], ascending=False)
         k_sorted_df = k_sorted_df.reset_index(drop=True)
         k_sim_sorted_df = k_sorted_df['k_sim']
         dk_w_sim_sorted_df = k_sorted_df['dk_sim_w']
@@ -1177,7 +1177,7 @@ def jac_NNopt_loss_function_err_sigma(X_df,costs_df,n_D,M,W,r):
             dE1r = Z * ((k_sim_sigma(xj, xii, W, sigma) * dji2) / (r * (sigma**2)))
             dEr_vect.append(cc * reg * (dE1r - dE2r))
         E_df = pd.DataFrame({'k_sim': k_sim_vect, 'dEw': dEw_vect, 'dEr': dEr_vect})
-        E_sorted_df = E_df.sort(['k_sim'], ascending=False)
+        E_sorted_df = E_df.sort_values(by=['k_sim'], ascending=False)
         E_sorted_df = E_sorted_df.reset_index(drop=True)
         dEw_sorted_df = E_sorted_df['dEw']
         dEr_sorted_df = E_sorted_df['dEr']
@@ -1413,6 +1413,8 @@ class VSMModel:
       # S regularization
       #loss_tot_reg = loss_tot + ((self.reg_w**2)/(n_Dx**2)) * np.sum(np.square(np.log(np.square(self.weights / self.weights_init)))) + (self.reg_r ** 2) * np.square(np.log(np.square(self.r / self.r_init)))
       #loss_tot_reg = loss_tot + ((self.reg_w ** 2) / (n_Dx ** 2)) * np.sum(np.square(np.log(self.weights / self.weights_init))) + (self.reg_r**2) * np.square(np.log(np.square(self.r / self.r_init)))
+      if(np.isnan(self.weights.any())):
+        print("weights:  {}", self.weights)
       loss_tot_reg = loss_tot + (self.reg_w ** 2) * np.sum(np.square(np.log(self.weights / self.weights_init))) + (self.reg_r ** 2) * np.square(np.log(np.square(self.r / self.r_init)))
       return loss_tot_reg
 
@@ -1427,11 +1429,13 @@ class VSMModel:
       self.weights = pp[:-1]
       self.r = pp[-1]
       #n_Dx = round(len(self.Y)/self.n_D)
-      der_loss_tot = self.jac_loss_function(self.X, self.Y, self.n_D, self.M, self.weights,self.r)
+      der_loss_tot = self.jac_loss_function(self.X, self.Y, self.n_D, self.M, self.weights, self.r)
 
       # S regularization
       #der_loss_tot_reg = der_loss_tot[:-1] + 4 * (1/self.weights) * ((self.reg_w**2)/(n_Dx**2)) * np.log(np.square(self.weights/self.weights_init))
       #der_loss_tot_reg = der_loss_tot[:-1] + 2 * (1 / self.weights) * ((self.reg_w ** 2) / (n_Dx ** 2)) * np.log(self.weights / self.weights_init)
+      if(np.isnan(self.weights.any())):
+        print("weights:  {}", self.weights)
       der_loss_tot_reg = der_loss_tot[:-1] + 2 * (1 / self.weights) * (self.reg_w ** 2) * np.log(self.weights / self.weights_init)
       der_loss_tot_reg = np.append(der_loss_tot_reg , (der_loss_tot[-1] + 4 * (1/self.r) * (self.reg_r**2) * np.log(np.square(self.r/self.r_init))))
       return der_loss_tot_reg
@@ -1662,9 +1666,16 @@ class EuclideanModel:
       n_D = self.n_D
       idd = (np.arange(n_D)).tolist()
 
+      #print(k_eucl_sim([5, 3, 2],[5, 3, 2]))
+      #print("1: ", k_eucl_sim(x, cold_data_features.iloc[1, 0:f_dim]))
+      #print("2: ", k_eucl_sim(x, cold_data_features.iloc[2, 0:f_dim]))
+      #print("3: ", k_eucl_sim(x, cold_data_features.iloc[3, 0:f_dim]))
+      #print("4: ", k_eucl_sim(x, cold_data_features.iloc[4, 0:f_dim]))
+      #print("5: ", k_eucl_sim(x, cold_data_features.iloc[5, 0:f_dim]))
       sims = []
       for i in range(n_D):
         sims.append(k_eucl_sim(x, cold_data_features.iloc[i,0:f_dim]))
+      ##print(sims)
       sims_df = pd.DataFrame({'id': idd,'sims': sims})
       sims_sorted_df = sims_df.sort(['sims'], ascending=False)
       cold_data_init_c = cold_data_init.loc[sims_sorted_df.index]
@@ -1677,11 +1688,14 @@ class EuclideanModel:
       nn_sims_sum = np.sum(nn_sims)
 
       qi_sum = np.zeros(cold_data_init_c.shape[1])
+      ##print(nn_sims)
       for i in range(nn):
         sim = nn_sims.iloc[i]
         qi = cold_data_init_c.iloc[i,:]
         qi_sum = np.add(qi_sum,np.multiply(qi,sim))
 
+      ##print(qi_sum)
+      ##print("nn: ", nn)
       if(nn_sims_sum < 1e-60):
         qi_pred = np.divide(qi_sum, 1e+60)
       else:

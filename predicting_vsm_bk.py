@@ -4,15 +4,15 @@ import pandas as pd
 import sys
 from random import randint
 # HUPL
-from hupl import EuclideanModel
-from hupl import VSMModel
-from hupl import preprocess_features_cold
-from hupl import preprocess_init_cold
-from hupl import preprocess_init_b_cold
-from hupl import preprocess_features_warm
-from hupl import preprocess_targets_warm
-from hupl import preprocess_features_complete
-from hupl import scale_robust
+from HUPL.hupl import EuclideanModel
+from HUPL.hupl import VSMModel
+from HUPL.hupl import preprocess_features_cold
+from HUPL.hupl import preprocess_init_cold
+from HUPL.hupl import preprocess_init_b_cold
+from HUPL.hupl import preprocess_features_warm
+from HUPL.hupl import preprocess_targets_warm
+from HUPL.hupl import preprocess_features_complete
+from HUPL.hupl import scale_robust
 
 if len(sys.argv) <= 5:
   sys.exit("Not enough args")
@@ -61,27 +61,19 @@ for col in input_new_df.columns:
 
 # retrieve the learned parameters
 weights_df = pd.read_csv(results_dir+"/w_best_df.csv",sep=",")
-w_plan_values = weights_df["weights plan"].values
-w_bounce_values = weights_df["weights bounce"].values
-##print("Weights plan: {}", w_init_opt_plan)
-##print("Weights bounce: {}", w_init_opt_bounce)
+w_values = weights_df["weight"].values
 #print(w_values)
 file_r = open(results_dir+"/r_best.txt", 'r')
 line_r = file_r.readlines()
-str_plan = line_r[0].strip()
-r_list_plan = str_plan.split(":")
-r_plan_value = float(r_list_plan[1])
-str_bounce = line_r[1].strip()
-r_list_bounce = str_bounce.split(":")
-r_bounce_value = float(r_list_bounce[1])
+str = line_r[0].strip()
+r_list = str.split(":")
+r_value = float(r_list[1])
 file_r.close()
 #print(r_value)
 #sys.exit("OK")
 
-eucl_model_plan = EuclideanModel(n_D=dim_cold)
-eucl_model_bounce = EuclideanModel(n_D=dim_cold)
-vsm_model_plan = VSMModel(n_D=dim_cold, weights_init=w_plan_values, r_init=r_plan_value)
-vsm_model_bounce = VSMModel(n_D=dim_cold, weights_init=w_bounce_values, r_init=r_bounce_value)
+eucl_model = EuclideanModel(n_D=dim_cold)
+vsm_model = VSMModel(n_D=dim_cold, weights_init=w_values, r_init=r_value)
 
 
 # --- predicting --- #
@@ -92,10 +84,9 @@ x_new = input_new_df_scaled.iloc[0,:]
 #print(qi_pred_rdm)
 #print(x_new)
 #sys.exit("OK")
-qi_pred_unfit_plan = eucl_model_plan.predict_init(x_new, inputs_dataframe_df_scaled, init_cold_dataframe)
-qi_pred_unfit_bounce = eucl_model_bounce.predict_init(x_new, inputs_dataframe_df_scaled, init_b_cold_dataframe)
-qi_pred_opt_plan = vsm_model_plan.predict_init(x_new, inputs_dataframe_df_scaled, init_cold_dataframe)
-qi_pred_opt_bounce = vsm_model_bounce.predict_init(x_new, inputs_dataframe_df_scaled, init_b_cold_dataframe)
+qi_pred_unfit = eucl_model.predict_init(x_new, inputs_dataframe_df_scaled, init_cold_dataframe)
+qi_pred_opt = vsm_model.predict_init(x_new, inputs_dataframe_df_scaled, init_cold_dataframe)
+
 
 # ------------------- Write down the prediction of the results ----------------------------------- #
 xf_plan_cols = init_cold_dataframe.columns.to_series().str.contains('xf_plan')
@@ -107,39 +98,25 @@ zb_L_cols = init_b_cold_dataframe.columns.to_series().str.contains('zb_L')
 zb_U_cols = init_b_cold_dataframe.columns.to_series().str.contains('zb_U')
 dual_bounce_cols = init_b_cold_dataframe.columns.to_series().str.contains('dual_bounce')
 
-## Random
 qi_xf_plan_rdm = qi_pred_rdm[xf_plan_cols]
 qi_zf_L_plan_rdm = qi_pred_rdm[zf_L_plan_cols]
 qi_zf_U_plan_rdm = qi_pred_rdm[zf_U_plan_cols]
 qi_dual_f_plan_rdm = qi_pred_rdm[dual_f_plan_cols]
 
-qi_x_bounce_rdm = qi_b_pred_rdm[x_bounce_cols]
-qi_zb_L_rdm = qi_b_pred_rdm[zb_L_cols]
-qi_zb_U_rdm = qi_b_pred_rdm[zb_U_cols]
-qi_dual_bounce_rdm = qi_b_pred_rdm[dual_bounce_cols]
+qi_xf_plan_unfit = qi_pred_unfit[xf_plan_cols]
+qi_zf_L_plan_unfit = qi_pred_unfit[zf_L_plan_cols]
+qi_zf_U_plan_unfit = qi_pred_unfit[zf_U_plan_cols]
+qi_dual_f_plan_unfit = qi_pred_unfit[dual_f_plan_cols]
 
-## Unfit
-qi_xf_plan_unfit = qi_pred_unfit_plan[xf_plan_cols]
-qi_zf_L_plan_unfit = qi_pred_unfit_plan[zf_L_plan_cols]
-qi_zf_U_plan_unfit = qi_pred_unfit_plan[zf_U_plan_cols]
-qi_dual_f_plan_unfit = qi_pred_unfit_plan[dual_f_plan_cols]
+qi_xf_plan_opt = qi_pred_opt[xf_plan_cols]
+qi_zf_L_plan_opt = qi_pred_opt[zf_L_plan_cols]
+qi_zf_U_plan_opt = qi_pred_opt[zf_U_plan_cols]
+qi_dual_f_plan_opt = qi_pred_opt[dual_f_plan_cols]
 
-qi_x_bounce_unfit = qi_pred_unfit_bounce[x_bounce_cols]
-qi_zb_L_unfit = qi_pred_unfit_bounce[zb_L_cols]
-qi_zb_U_unfit = qi_pred_unfit_bounce[zb_U_cols]
-qi_dual_bounce_unfit = qi_pred_unfit_bounce[dual_bounce_cols]
-
-## Optimal
-qi_xf_plan_opt = qi_pred_opt_plan[xf_plan_cols]
-qi_zf_L_plan_opt = qi_pred_opt_plan[zf_L_plan_cols]
-qi_zf_U_plan_opt = qi_pred_opt_plan[zf_U_plan_cols]
-qi_dual_f_plan_opt = qi_pred_opt_plan[dual_f_plan_cols]
-
-qi_x_bounce_opt = qi_pred_opt_bounce[x_bounce_cols]
-qi_zb_L_opt = qi_pred_opt_bounce[zb_L_cols]
-qi_zb_U_opt = qi_pred_opt_bounce[zb_U_cols]
-qi_dual_bounce_opt = qi_pred_opt_bounce[dual_bounce_cols]
-# ------------------------------------------------------ #
+qi_x_bounce = qi_b_pred_rdm[x_bounce_cols]
+qi_zb_L = qi_b_pred_rdm[zb_L_cols]
+qi_zb_U = qi_b_pred_rdm[zb_U_cols]
+qi_dual_bounce = qi_b_pred_rdm[dual_bounce_cols]
 
 dual_bounce_size = int(dual_bounce_size_str)
 pred_file  = open(pred_file_str, "w")
@@ -173,27 +150,27 @@ for i in range(0,len(qi_dual_f_plan_rdm)):
 pred_file.write("\n")
 pred_file.write("## Bounce posture selection data ##\n")
 pred_file.write("X_rdm_bounce=")
-for i in range(0,len(qi_x_bounce_rdm)):
-    pred_file.write("%.15f" % qi_x_bounce_rdm[i])
-    if not (i == (len(qi_x_bounce_rdm) -1)):
+for i in range(0,len(qi_x_bounce)):
+    pred_file.write("%.15f" % qi_x_bounce[i])
+    if not (i == (len(qi_x_bounce) -1)):
         pred_file.write("|")
 pred_file.write("\n")
 pred_file.write("ZL_rdm_bounce=")
-for i in range(0,len(qi_zb_L_rdm)):
-    pred_file.write("%.15f" % qi_zb_L_rdm[i])
-    if not (i == (len(qi_zb_L_rdm) -1)):
+for i in range(0,len(qi_zb_L)):
+    pred_file.write("%.15f" % qi_zb_L[i])
+    if not (i == (len(qi_zb_L) -1)):
         pred_file.write("|")
 pred_file.write("\n")
 pred_file.write("ZU_rdm_bounce=")
-for i in range(0,len(qi_zb_U_rdm)):
-    pred_file.write("%.15f" % qi_zb_U_rdm[i])
-    if not (i == (len(qi_zb_U_rdm) -1)):
+for i in range(0,len(qi_zb_U)):
+    pred_file.write("%.15f" % qi_zb_U[i])
+    if not (i == (len(qi_zb_U) -1)):
         pred_file.write("|")
 pred_file.write("\n")
 pred_file.write("Dual_rdm_bounce=")
 for i in range(0,dual_bounce_size):
-    if(i < len(qi_dual_bounce_rdm)):
-        pred_file.write("%.15f" % qi_dual_bounce_rdm[i])
+    if(i < len(qi_dual_bounce)):
+        pred_file.write("%.15f" % qi_dual_bounce[i])
     else:
         pred_file.write("%.15f" % 0.0)
     if not (i == dual_bounce_size -1):
@@ -228,27 +205,27 @@ for i in range(0,len(qi_dual_f_plan_unfit)):
 pred_file.write("\n")
 pred_file.write("## Bounce posture selection data ##\n")
 pred_file.write("X_knn_eucl_bounce=")
-for i in range(0,len(qi_x_bounce_unfit)):
-    pred_file.write("%.15f" % qi_x_bounce_unfit[i])
-    if not (i == (len(qi_x_bounce_unfit) -1)):
+for i in range(0,len(qi_x_bounce)):
+    pred_file.write("%.15f" % qi_x_bounce[i])
+    if not (i == (len(qi_x_bounce) -1)):
         pred_file.write("|")
 pred_file.write("\n")
 pred_file.write("ZL_knn_eucl_bounce=")
-for i in range(0,len(qi_zb_L_unfit)):
-    pred_file.write("%.15f" % qi_zb_L_unfit[i])
-    if not (i == (len(qi_zb_L_unfit) -1)):
+for i in range(0,len(qi_zb_L)):
+    pred_file.write("%.15f" % qi_zb_L[i])
+    if not (i == (len(qi_zb_L) -1)):
         pred_file.write("|")
 pred_file.write("\n")
 pred_file.write("ZU_knn_eucl_bounce=")
-for i in range(0,len(qi_zb_U_unfit)):
-    pred_file.write("%.15f" % qi_zb_U_unfit[i])
-    if not (i == (len(qi_zb_U_unfit) -1)):
+for i in range(0,len(qi_zb_U)):
+    pred_file.write("%.15f" % qi_zb_U[i])
+    if not (i == (len(qi_zb_U) -1)):
         pred_file.write("|")
 pred_file.write("\n")
 pred_file.write("Dual_knn_eucl_bounce=")
 for i in range(0,dual_bounce_size):
-    if(i < len(qi_dual_bounce_unfit)):
-        pred_file.write("%.15f" % qi_dual_bounce_unfit[i])
+    if(i < len(qi_dual_bounce)):
+        pred_file.write("%.15f" % qi_dual_bounce[i])
     else:
         pred_file.write("%.15f" % 0.0)
     if not (i == dual_bounce_size -1):
@@ -283,27 +260,27 @@ for i in range(0,len(qi_dual_f_plan_opt)):
 pred_file.write("\n")
 pred_file.write("## Bounce posture selection data ##\n")
 pred_file.write("X_knn_opt_bounce=")
-for i in range(0,len(qi_x_bounce_opt)):
-    pred_file.write("%.15f" % qi_x_bounce_opt[i])
-    if not (i == (len(qi_x_bounce_opt) -1)):
+for i in range(0,len(qi_x_bounce)):
+    pred_file.write("%.15f" % qi_x_bounce[i])
+    if not (i == (len(qi_x_bounce) -1)):
         pred_file.write("|")
 pred_file.write("\n")
 pred_file.write("ZL_knn_opt_bounce=")
-for i in range(0,len(qi_zb_L_opt)):
-    pred_file.write("%.15f" % qi_zb_L_opt[i])
-    if not (i == (len(qi_zb_L_opt) -1)):
+for i in range(0,len(qi_zb_L)):
+    pred_file.write("%.15f" % qi_zb_L[i])
+    if not (i == (len(qi_zb_L) -1)):
         pred_file.write("|")
 pred_file.write("\n")
 pred_file.write("ZU_knn_opt_bounce=")
-for i in range(0,len(qi_zb_U_opt)):
-    pred_file.write("%.15f" % qi_zb_U_opt[i])
-    if not (i == (len(qi_zb_U_opt) -1)):
+for i in range(0,len(qi_zb_U)):
+    pred_file.write("%.15f" % qi_zb_U[i])
+    if not (i == (len(qi_zb_U) -1)):
         pred_file.write("|")
 pred_file.write("\n")
 pred_file.write("Dual_knn_opt_bounce=")
 for i in range(0,dual_bounce_size):
-    if(i < len(qi_dual_bounce_opt)):
-        pred_file.write("%.15f" % qi_dual_bounce_opt[i])
+    if(i < len(qi_dual_bounce)):
+        pred_file.write("%.15f" % qi_dual_bounce[i])
     else:
         pred_file.write("%.15f" % 0.0) # the performance of the bounce posture selection is not under examination
     if not (i == dual_bounce_size -1):
