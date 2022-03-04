@@ -6,6 +6,16 @@ import pandas as pd
 from scipy.optimize import minimize
 from scipy import stats
 
+## check pandas version
+pandas_updated = False
+pd_version = pd.__version__
+pd_splitted = pd_version.split('.')
+if (float(pd_splitted[1]) >= 25):
+    pandas_updated = True
+else:
+    pandas_updated = False
+print("Using Pandas version " + pd.__version__)
+
 
 def preprocess_features_cold(task_dataframe):
   """Prepares input features of the cold dataset.
@@ -993,7 +1003,12 @@ def NNopt_loss_function_err_eucl(X_df,costs_df,n_D,M,f_dim):
         xii = xi_df.iloc[ii]
         k_sim_vect.append(k_eucl_sim(xj, xii))
     k_sim_df = pd.DataFrame({'k_sim': k_sim_vect})
-    k_sim_sorted_df = k_sim_df.sort_values(by=['k_sim'], ascending=False)
+
+    if pandas_updated:
+        k_sim_sorted_df = k_sim_df.sort_values(by=['k_sim'], ascending=False)
+    else:
+        k_sim_sorted_df = k_sim_df.sort(['k_sim'], ascending=False)
+
     k_sim_sorted_df = k_sim_sorted_df.reset_index(drop=True)
     k_sim_sored_values = k_sim_sorted_df['k_sim']
     Z = np.sum(k_sim_sored_values.iloc[0:nn])
@@ -1008,7 +1023,12 @@ def NNopt_loss_function_err_eucl(X_df,costs_df,n_D,M,f_dim):
         cc = costs_df.iloc[(jj * n_D)+ii, 0]  # total cost
         E_vect.append(cc * reg * (k_eucl_sim(xj, xii)))
     E_df = pd.DataFrame({'k_sim': k_sim_vect,'E_value': E_vect})
-    E_sorted_df = E_df.sort_values(by=['k_sim'], ascending=False)
+
+    if pandas_updated:
+        E_sorted_df = E_df.sort_values(by=['k_sim'], ascending=False)
+    else:
+        E_sorted_df = E_df.sort(['k_sim'], ascending=False)
+
     E_sorted_df = E_sorted_df.reset_index(drop=True)
     E_value_sorted_df = E_sorted_df['E_value']
     E = np.sum(E_value_sorted_df.iloc[0:nn])
@@ -1055,7 +1075,11 @@ def NNopt_loss_function_err_sigma(X_df,costs_df,n_D,M,W,r):
         ratio = xdiff2m/dm
         ratio_m.append(ratio)
     dm_df = pd.DataFrame({'distance_m': dm_vect, 'xdiff2_m': xdiff2_m, 'ratio_m': ratio_m})
-    dm_sorted_df = dm_df.sort_values(by=['distance_m'], ascending=True)
+    if pandas_updated:
+        dm_sorted_df = dm_df.sort_values(by=['distance_m'], ascending=True)
+    else:
+        dm_sorted_df = dm_df.sort(['distance_m'], ascending=True)
+
     dm_sorted_df = dm_sorted_df.reset_index(drop=True)
     dist_m_sorted_df = dm_sorted_df['distance_m']
     xdiff2_m_sorted_df = dm_sorted_df['xdiff2_m']
@@ -1068,7 +1092,10 @@ def NNopt_loss_function_err_sigma(X_df,costs_df,n_D,M,W,r):
         xii = xi_df.iloc[ii]
         k_sim_vect.append(k_sim_sigma(xj, xii, W, sigma))
     k_sim_df = pd.DataFrame({'k_sim': k_sim_vect})
-    k_sim_sorted_df = k_sim_df.sort_values(by=['k_sim'], ascending=False)
+    if pandas_updated:
+        k_sim_sorted_df = k_sim_df.sort_values(by=['k_sim'], ascending=False)
+    else:
+        k_sim_sorted_df = k_sim_df.sort(['k_sim'], ascending=False)
     k_sim_sorted_df = k_sim_sorted_df.reset_index(drop=True)
     k_sim_sored_values = k_sim_sorted_df['k_sim']
     Z = np.sum(k_sim_sored_values.iloc[0:nn])
@@ -1083,7 +1110,10 @@ def NNopt_loss_function_err_sigma(X_df,costs_df,n_D,M,W,r):
         cc = costs_df.iloc[(jj * n_D)+ii, 0]  # total cost
         E_vect.append(cc * reg * (k_sim_sigma(xj, xii, W, sigma)))
     E_df = pd.DataFrame({'k_sim': k_sim_vect,'E_value': E_vect})
-    E_sorted_df = E_df.sort_values(by=['k_sim'], ascending=False)
+    if pandas_updated:
+        E_sorted_df = E_df.sort_values(by=['k_sim'], ascending=False)
+    else:
+        E_sorted_df = E_df.sort(['k_sim'], ascending=False)
     E_sorted_df = E_sorted_df.reset_index(drop=True)
     E_value_sorted_df = E_sorted_df['E_value']
     E = np.sum(E_value_sorted_df.iloc[0:nn])
@@ -1128,7 +1158,10 @@ def jac_NNopt_loss_function_err_sigma(X_df,costs_df,n_D,M,W,r):
             ratio = xdiff2m/dm
             ratio_m.append(ratio)
         dm_df = pd.DataFrame({'distance_m': dm_vect, 'xdiff2_m': xdiff2_m, 'ratio_m': ratio_m})
-        dm_sorted_df = dm_df.sort_values(by=['distance_m'], ascending=True)
+        if pandas_updated:
+            dm_sorted_df = dm_df.sort_values(by=['distance_m'], ascending=True)
+        else:
+            dm_sorted_df = dm_df.sort(['distance_m'], ascending=True)
         dm_sorted_df = dm_sorted_df.reset_index(drop=True)
         dist_m_sorted_df = dm_sorted_df['distance_m']
         xdiff2_m_sorted_df = dm_sorted_df['xdiff2_m']
@@ -1148,7 +1181,10 @@ def jac_NNopt_loss_function_err_sigma(X_df,costs_df,n_D,M,W,r):
             dk_sim_r_vect.append((k_sim_sigma(xj, xii, W, sigma) * dji2) / (r * (sigma**2)))
 
         k_df = pd.DataFrame({'k_sim': k_sim_vect,'dk_sim_w': dk_sim_w_vect,'dk_sim_r': dk_sim_r_vect})
-        k_sorted_df = k_df.sort_values(by=['k_sim'], ascending=False)
+        if pandas_updated:
+            k_sorted_df = k_df.sort_values(by=['k_sim'], ascending=False)
+        else:
+            k_sorted_df = k_df.sort(['k_sim'], ascending=False)
         k_sorted_df = k_sorted_df.reset_index(drop=True)
         k_sim_sorted_df = k_sorted_df['k_sim']
         dk_w_sim_sorted_df = k_sorted_df['dk_sim_w']
@@ -1177,7 +1213,10 @@ def jac_NNopt_loss_function_err_sigma(X_df,costs_df,n_D,M,W,r):
             dE1r = Z * ((k_sim_sigma(xj, xii, W, sigma) * dji2) / (r * (sigma**2)))
             dEr_vect.append(cc * reg * (dE1r - dE2r))
         E_df = pd.DataFrame({'k_sim': k_sim_vect, 'dEw': dEw_vect, 'dEr': dEr_vect})
-        E_sorted_df = E_df.sort_values(by=['k_sim'], ascending=False)
+        if pandas_updated:
+            E_sorted_df = E_df.sort_values(by=['k_sim'], ascending=False)
+        else:
+            E_sorted_df = E_df.sort(['k_sim'], ascending=False)
         E_sorted_df = E_sorted_df.reset_index(drop=True)
         dEw_sorted_df = E_sorted_df['dEw']
         dEr_sorted_df = E_sorted_df['dEr']
@@ -1490,7 +1529,10 @@ class VSMModel:
           x_diff_2 = np.square(np.array(x) - np.array(xii))
           dd.append(np.sqrt(np.sum(x_diff_2 * W2)))
       dd_df = pd.DataFrame({'distance_m': dd})
-      dd_sorted_df = dd_df.sort(['distance_m'], ascending=True)
+      if pandas_updated:
+          dd_sorted_df = dd_df.sort_values(by=['distance_m'], ascending=True)
+      else:
+        dd_sorted_df = dd_df.sort(['distance_m'], ascending=True)
       dd_sorted_df = dd_sorted_df.reset_index(drop=True)
       dm_sorted_df = dd_sorted_df['distance_m']
       sigma = r * (1 / mm) * np.sum(dm_sorted_df.iloc[0:mm])
@@ -1498,7 +1540,10 @@ class VSMModel:
       for i in range(n_D):
         sims.append(k_sim_sigma(x, c_data_in.iloc[i,0:f_dim], w, sigma))
       sims_df = pd.DataFrame({'id': idd,'sims': sims})
-      sims_sorted_df = sims_df.sort(['sims'], ascending=False)
+      if pandas_updated:
+          sims_sorted_df = sims_df.sort_values(by=['sims'], ascending=False)
+      else:
+        sims_sorted_df = sims_df.sort(['sims'], ascending=False)
       sims_sorted_df = sims_sorted_df.reset_index(drop=True)
       sims_id_sorted_df = sims_sorted_df['id']
       sims_s_sorted_df = sims_sorted_df['sims']
@@ -1554,7 +1599,10 @@ class VSMModel:
           x_diff_2 = np.square(np.array(x) - np.array(xii))
           dd.append(np.sqrt(np.sum(x_diff_2 * W2)))
       dd_df = pd.DataFrame({'distance_m': dd})
-      dd_sorted_df = dd_df.sort(['distance_m'], ascending=True)
+      if pandas_updated:
+          dd_sorted_df = dd_df.sort_values(by=['distance_m'], ascending=True)
+      else:
+        dd_sorted_df = dd_df.sort(['distance_m'], ascending=True)
       dd_sorted_df = dd_sorted_df.reset_index(drop=True)
       dm_sorted_df = dd_sorted_df['distance_m']
       sigma = r * (1 / mm) * np.sum(dm_sorted_df.iloc[0:mm])
@@ -1562,7 +1610,10 @@ class VSMModel:
       for i in range(n_D):
         sims.append(k_sim_sigma(x, cold_data_features.iloc[i,0:f_dim], w, sigma))
       sims_df = pd.DataFrame({'id': idd,'sims': sims})
-      sims_sorted_df = sims_df.sort(['sims'], ascending=False)
+      if pandas_updated:
+          sims_sorted_df = sims_df.sort_values(by=['sims'], ascending=False)
+      else:
+        sims_sorted_df = sims_df.sort(['sims'], ascending=False)
       cold_data_init_c = cold_data_init.loc[sims_sorted_df.index]
       sims_sorted_df = sims_sorted_df.reset_index(drop=True)
       cold_data_init_c = cold_data_init_c.reset_index(drop=True)
@@ -1622,7 +1673,10 @@ class EuclideanModel:
       for i in range(n_D):
         sims.append(k_eucl_sim(x, c_data_in.iloc[i,0:f_dim]))
       sims_df = pd.DataFrame({'id': idd,'sims': sims})
-      sims_sorted_df = sims_df.sort(['sims'], ascending=False)
+      if pandas_updated:
+          sims_sorted_df = sims_df.sort_values(by=['sims'], ascending=False)
+      else:
+        sims_sorted_df = sims_df.sort(['sims'], ascending=False)
       sims_sorted_df = sims_sorted_df.reset_index(drop=True)
       sims_id_sorted_df = sims_sorted_df['id']
       sims_s_sorted_df = sims_sorted_df['sims']
@@ -1677,7 +1731,10 @@ class EuclideanModel:
         sims.append(k_eucl_sim(x, cold_data_features.iloc[i,0:f_dim]))
       ##print(sims)
       sims_df = pd.DataFrame({'id': idd,'sims': sims})
-      sims_sorted_df = sims_df.sort(['sims'], ascending=False)
+      if pandas_updated:
+          sims_sorted_df = sims_df.sort_values(by=['sims'], ascending=False)
+      else:
+        sims_sorted_df = sims_df.sort(['sims'], ascending=False)
       cold_data_init_c = cold_data_init.loc[sims_sorted_df.index]
       sims_sorted_df = sims_sorted_df.reset_index(drop=True)
       cold_data_init_c = cold_data_init_c.reset_index(drop=True)

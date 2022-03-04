@@ -24,7 +24,17 @@ check_loss_str = str(sys.argv[4]) # true to check the loss, false to train
 online = (online_str == 'True')
 check_loss = (check_loss_str == 'True')
 
+## check pandas version
+pandas_updated = False
+pd_version = pd.__version__
+pd_splitted = pd_version.split('.')
+if (float(pd_splitted[1]) >= 25):
+    pandas_updated = True
+else:
+    pandas_updated = False
+print("Using Pandas version " + pd.__version__)
 print("Data acquisition ...")
+
 # --- cold-started dataframe --- #
 cold_dataframe = pd.read_csv(data_dir+"/cold_dataset.csv",sep=",")
 inputs_dataframe = preprocess_features_cold(cold_dataframe) # dataset D
@@ -50,11 +60,11 @@ min_der_err_plan = D_prime_dataset_df_scaled["mean_der_error_plan_warm"].min()
 max_der_err_plan = 2.0
 ## bounce
 min_err_b = D_prime_dataset_df_scaled["error_bounce_warm"].min()
-max_err_b = 0.5
+max_err_b = 0.3
 ##print("Min error_bounce_warm: {}", D_prime_dataset_df_scaled["error_bounce_warm"].min())
 ##print("Max error_bounce_warm: {}", D_prime_dataset_df_scaled["error_bounce_warm"].max())
 min_der_err_b = D_prime_dataset_df_scaled["mean_der_error_bounce_warm"].min()
-max_der_err_b = 1.0
+max_der_err_b = 0.8
 
 D_prime_dataset_df_clipped = D_prime_dataset_df_scaled.copy()
 
@@ -117,9 +127,12 @@ if (check_loss):
     print("Weights bounce: {}", w_init_opt_bounce)
     file_r = open(results_dir+"/r_best.txt", 'r')
     line_r = file_r.readlines()
-    str = line_r[0].strip()
-    r_list = str.split(":")
-    r_init_opt = float(r_list[1])
+    str_plan = line_r[0].strip()
+    r_list_plan = str_plan.split(":")
+    r_init_opt_plan = float(r_list_plan[1])
+    str_bounce = line_r[1].strip()
+    r_list_bounce = str_plan.split(":")
+    r_init_opt_bounce = float(r_list_bounce[1])
     file_r.close()
 
 eucl_model_plan = EuclideanModel(n_D=dim_cold)
@@ -127,7 +140,7 @@ vsm_model_plan = VSMModel(X=X_train,Y=Y_train_plan,n_D=dim_cold,weights_init=w_i
 eucl_model_bounce = EuclideanModel(n_D=dim_cold)
 vsm_model_bounce = VSMModel(X=X_train,Y=Y_train_bounce,n_D=dim_cold,weights_init=w_init_opt_bounce,r_init=r_init_opt_bounce,reg_w=reg_w,reg_r=reg_r,tol=tol)
 
-if check_loss:
+if (check_loss):
     dateTimeObj = datetime.now()
     timestampStr = dateTimeObj.strftime("%d-%b-%Y_(%H:%M:%S)")
 
@@ -138,6 +151,7 @@ if check_loss:
     file_train_loss_time = open(results_dir+"/train_loss_"+timestampStr+"_.txt","w")
 
     ### ------ plan stage ------- ###
+    print("#### Loss checking for Plan ####")
     ## Untrained loss
     loss_unfit_plan = eucl_model_plan.loss_function(X_test,Y_test_plan, dim_cold, eucl_model_plan.M,f_dim)
     #file_untrain_loss_plan = open(results_dir+"/untrain_loss.txt","w")
@@ -150,6 +164,7 @@ if check_loss:
     print("Plan stage untrained Loss: {}. Plan stage trained Loss: {}.".format(loss_unfit_plan,loss_opt_plan))
 
     ### ------ bounce stage ------- ###
+    print("#### Loss checking for Bounce ####")
     ## Untrained loss
     loss_unfit_bounce = eucl_model_bounce.loss_function(X_test,Y_test_bounce, dim_cold, eucl_model_bounce.M,f_dim)
     print("Bounce untrained Loss: {}".format(loss_unfit_bounce),file=file_untrain_loss)
@@ -166,6 +181,7 @@ if check_loss:
     file_untrain_loss_time.close()
     file_train_loss.close()
     file_train_loss_time.close()
+
 else:
     print("#### Training for Plan ####")
     res_plan = vsm_model_plan.train(maxiter=maxiter) # Training
@@ -234,10 +250,25 @@ else:
     w_df.to_csv(results_dir+"/w_best_df.csv", index=False)
     w_df.to_csv(results_dir+"/w_best_df_"+timestampStr+"_.csv", index=False)
     w2_df = pd.DataFrame({'feature id':features,'feature name':inputs_dataframe.columns,'squared weights plan': np.square(w_best_plan),'squared weights bounce': np.square(w_best_bounce)})
-    w2_sorted_df = w2_df.sort_values(by=['squared weights'],ascending=False)
-    w2_sorted_df.to_csv(results_dir+"/w2_sorted_df_"+timestampStr+"_.csv", index=False)
-    w2_sorted_df.iloc[:35,:].plot(x='feature id',y='squared weights',kind='bar') # plot the most 35 significant features
-    plt.savefig(results_dir+"/weights_"+timestampStr+"_.png")
+
+    if pandas_updated:
+        w2_sorted_plan_df = w2_df.sort_values(by=['squared weights plan'],ascending=False)
+        w2_sorted_bounce_df = w2_df.sort_values(by=['squared weights bounce'], ascending=False)
+    else:
+        w2_sorted_plan_df = w2_df.sort(['squared weights plan'],ascending=False)
+        w2_sorted_bounce_df = w2_df.sort(['squared weights bounce'], ascending=False)
+
+    w2_sorted_plan_df.to_csv(results_dir+"/w2_sorted_plan_df_"+timestampStr+"_.csv", index=False)
+    w2_sorted_plan_df.iloc[:35,:].plot(x='feature id',y='squared weights plan',kind='bar') # plot the most 35 significant features
+    fig_plan = plt.figure()
+    fig_plan.savefig(results_dir+"/weights_plan_"+timestampStr+"_.png")
+    plt.close(fig_plan)
+
+    w2_sorted_bounce_df.to_csv(results_dir+"/w2_sorted_bounce_df_"+timestampStr+"_.csv", index=False)
+    w2_sorted_bounce_df.iloc[:35,:].plot(x='feature id',y='squared weights bounce',kind='bar') # plot the most 35 significant features
+    fig_bounce = plt.figure()
+    fig_bounce.savefig(results_dir+"/weights_bounce_"+timestampStr+"_.png")
+    plt.close(fig_bounce)
 
 
 

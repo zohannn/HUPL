@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="aea636a5-0d54-4bd6-8aab-34c3e8044897" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hupl.py" beforeDir="false" afterPath="$PROJECT_DIR$/hupl.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predicting_vsm.py" beforeDir="false" afterPath="$PROJECT_DIR$/predicting_vsm.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/training_vsm.py" beforeDir="false" afterPath="$PROJECT_DIR$/training_vsm.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -16,57 +16,45 @@
     <session id="1244666886">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="16" />
+          <entry key="project.closed" value="18" />
           <entry key="project.open.time.0" value="1" />
           <entry key="project.open.time.4" value="1" />
           <entry key="project.open.time.5" value="4" />
-          <entry key="project.open.time.6" value="8" />
-          <entry key="project.open.time.7" value="6" />
+          <entry key="project.open.time.6" value="9" />
+          <entry key="project.open.time.7" value="7" />
           <entry key="project.open.time.8" value="1" />
-          <entry key="project.opened" value="21" />
+          <entry key="project.opened" value="23" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="py" value="6" />
+          <entry key="py" value="7" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Python" value="6" />
+          <entry key="Python" value="7" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="2487" />
+          <entry key="py" value="3332" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="2487" />
+          <entry key="Python" value="3332" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/training_vsm.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="577">
-              <caret line="144" column="40" lean-forward="true" selection-start-line="144" selection-start-column="40" selection-end-line="144" selection-end-column="40" />
-              <folding>
-                <element signature="e#29#47#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/predicting_vsm.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="592">
-              <caret line="147" column="51" lean-forward="true" selection-start-line="147" selection-start-column="51" selection-end-line="147" selection-end-column="51" />
+            <state relative-caret-position="816">
+              <caret line="251" column="187" lean-forward="true" selection-start-line="251" selection-start-column="187" selection-end-line="251" selection-end-column="187" />
               <folding>
                 <element signature="e#29#47#0" expanded="true" />
               </folding>
@@ -75,10 +63,13 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/predicting_vsm_bk.py">
+        <entry file="file://$PROJECT_DIR$/predicting_vsm.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="420">
-              <caret line="74" column="6" selection-start-line="74" selection-start-column="6" selection-end-line="74" selection-end-column="6" />
+            <state relative-caret-position="-248">
+              <caret line="112" column="46" lean-forward="true" selection-start-line="112" selection-start-column="46" selection-end-line="112" selection-end-column="46" />
+              <folding>
+                <element signature="e#29#47#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -86,8 +77,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/hupl.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="297">
-              <caret line="1673" column="71" lean-forward="true" selection-start-line="1673" selection-start-column="71" selection-end-line="1673" selection-end-column="71" />
+            <state relative-caret-position="551">
+              <caret line="1492" column="52" lean-forward="true" selection-start-line="1492" selection-start-column="52" selection-end-line="1492" selection-end-column="52" />
               <folding>
                 <element signature="e#30#41#0" expanded="true" />
               </folding>
@@ -104,6 +95,7 @@
       <find>NNopt_loss_function_err_eucl</find>
       <find>robust_scale</find>
       <find>k_eucl_sim</find>
+      <find>sort</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -112,13 +104,13 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/training_vsm.py" />
         <option value="$PROJECT_DIR$/predicting_vsm.py" />
         <option value="$PROJECT_DIR$/hupl.py" />
+        <option value="$PROJECT_DIR$/training_vsm.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="905" />
     <option name="y" value="2" />
     <option name="width" value="988" />
@@ -225,7 +217,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-1" y="0" width="1922" height="1055" extended-state="7" />
+    <frame x="-1" y="0" width="1922" height="1055" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.14586625" />
@@ -258,27 +250,24 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/training_vsm.py">
+    <entry file="file://$PROJECT_DIR$/predicting_vsm_bk.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="577">
-          <caret line="144" column="40" lean-forward="true" selection-start-line="144" selection-start-column="40" selection-end-line="144" selection-end-column="40" />
-          <folding>
-            <element signature="e#29#47#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="915">
+          <caret line="74" column="6" selection-start-line="74" selection-start-column="6" selection-end-line="74" selection-end-column="6" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/predicting_vsm_bk.py">
+    <entry file="file://$PROJECT_DIR$/training_vsm_bk.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
-          <caret line="74" column="6" selection-start-line="74" selection-start-column="6" selection-end-line="74" selection-end-column="6" />
+        <state relative-caret-position="667">
+          <caret line="162" column="13" lean-forward="true" selection-start-line="162" selection-start-column="13" selection-end-line="162" selection-end-column="13" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/hupl.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="297">
-          <caret line="1673" column="71" lean-forward="true" selection-start-line="1673" selection-start-column="71" selection-end-line="1673" selection-end-column="71" />
+        <state relative-caret-position="551">
+          <caret line="1492" column="52" lean-forward="true" selection-start-line="1492" selection-start-column="52" selection-end-line="1492" selection-end-column="52" />
           <folding>
             <element signature="e#30#41#0" expanded="true" />
           </folding>
@@ -287,8 +276,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/predicting_vsm.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="592">
-          <caret line="147" column="51" lean-forward="true" selection-start-line="147" selection-start-column="51" selection-end-line="147" selection-end-column="51" />
+        <state relative-caret-position="-248">
+          <caret line="112" column="46" lean-forward="true" selection-start-line="112" selection-start-column="46" selection-end-line="112" selection-end-column="46" />
+          <folding>
+            <element signature="e#29#47#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/training_vsm.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="816">
+          <caret line="251" column="187" lean-forward="true" selection-start-line="251" selection-start-column="187" selection-end-line="251" selection-end-column="187" />
           <folding>
             <element signature="e#29#47#0" expanded="true" />
           </folding>
